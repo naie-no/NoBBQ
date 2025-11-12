@@ -28,3 +28,17 @@ Progress can be tracked by either
 - Blog 1: https://medium.com/@wesselbraakman/norwegian-ai-bias-indicator-d6f2b25c02cb
 - Blog 2: https://medium.com/@wesselbraakman/norwegian-ai-bias-indicator-pt-2-3d16376a542a
 - Blog 3: in progress
+
+---
+
+### License
+
+© Norsk AI-Etikkforening (NAIE) 2025
+
+- **Code** is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).  
+- **Datasets, documentation, and research outputs** are licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+You are free to use and adapt this work with proper attribution.  
+Logo and name are trademarks of Norsk AI-Etikkforening and are not covered by these licenses.
+
+---

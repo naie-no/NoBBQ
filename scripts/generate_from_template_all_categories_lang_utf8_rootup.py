@@ -45,17 +45,17 @@ cats = [
 #    "Age",
 #    "Physical_appearance",
 #    "SES",
-#    "Gender_identity",
+    "Gender_identity",
 #    "Race_ethnicity",
-    "Religion",
+#    "Religion",
 #    "Nationality",
 #    "Sexual_orientation",
 ]
 
 # read in vocabulary files
-vocab = pd.read_csv(_pick_csv("vocabulary"), encoding="utf-8-sig")
+vocab = pd.read_csv(_pick_csv("vocabulary_nb"), encoding="utf-8-sig")
 vocab = vocab[vocab.Pilot_include != "No"]
-names_vocab = pd.read_csv(_pick_csv("vocabulary_proper_names"), encoding="utf-8-sig")
+names_vocab = pd.read_csv(_pick_csv("vocabulary_proper_names_nb"), encoding="utf-8-sig")
 
 unknown_options = [
     "Unknown",

@@ -35,17 +35,17 @@ We use the following script for Norsk Bokmål:
 
 This script utilizes one or more ".\templates\<<CATEGORY_NAME>>_nb.csv" files to create context/question files in ".\data_nb\" folder. If you are testing just ONE of the categories, make sure to comment out the others in the script!
 
-# all possible values of cat
+all possible values of cat
 cats = [
-#    "Disability_status",
-#    "Age",
-#    "Physical_appearance",
-#    "SES",
+    "Disability_status",
+    "Age",
+    "Physical_appearance",
+    "SES",
     "Gender_identity",
-#    "Race_ethnicity",
-#    "Religion",
-#    "Nationality",
-#    "Sexual_orientation",
+    "Race_ethnicity",
+    "Religion",
+    "Nationality",
+    "Sexual_orientation",
 ]
 
 To use this script, make sure your <<CATEGORY_NAME>>_nb.csv file is ready, comma-separated (not semicolon or something else), and utf-8 encoded. If this file does not adhere to these restrictions, the script will fail.

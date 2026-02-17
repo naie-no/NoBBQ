@@ -30,12 +30,13 @@ Progress can be tracked by either
 - Blog 3: in progress
 
 **How to use templates and scripts:**
-We use the following script for Norsk Bokmål:
+**We use the following script for Norsk Bokmål:**
 .\scripts\generate_from_template_all_categories_lang_utf8_nb.py
 
-This script utilizes one or more ".\templates\<<CATEGORY_NAME>>_nb.csv" files to create context/question files in ".\data_nb\" folder. If you are testing just ONE of the categories, make sure to comment out the others in the script!
+This script utilizes one or more **".\templates\<<CATEGORY_NAME>>_nb.csv"** files to create context/question files in ".\data_nb\" folder.
+If you are testing just ONE of the categories, make sure to **comment out the others** in the script:
 
-all possible values of cat
+**all possible values of cat**
 cats = [
     "Disability_status",
     "Age",
@@ -48,13 +49,14 @@ cats = [
     "Sexual_orientation",
 ]
 
-To use this script, make sure your <<CATEGORY_NAME>>_nb.csv file is ready, comma-separated (not semicolon or something else), and utf-8 encoded. If this file does not adhere to these restrictions, the script will fail.
+To use this script, make sure your **<<CATEGORY_NAME>>_nb.csv** file is ready, comma-separated (not semicolon or something else), and utf-8 encoded.
+If this file does not adhere to these restrictions, the script will fail.
 
-Run the script from the MAIN folder (in our case, the "NoBBQ" folder).
+**Run the script from the MAIN folder (in our case, the "NoBBQ" folder).**
 
-set BBQ_LANG=nb && python scripts\generate_from_template_all_categories_lang_utf8_nb.py
+**set BBQ_LANG=nb && python scripts\generate_from_template_all_categories_lang_utf8_nb.py**
 
-The output should look like this:
+**The output should look like this:**
 C:\Users\wesselb\dev\NoBBQ>set BBQ_LANG=nb && python scripts\generate_from_template_all_categories_lang_utf8_nb.py
 generated 8 sentences total for Gender_identity
 generated 16 sentences total for Gender_identity

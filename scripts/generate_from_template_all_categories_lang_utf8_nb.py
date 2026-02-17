@@ -11,6 +11,34 @@ import random
 import re
 import ast
 
+import json
+
+def parse_list_cell(val):
+    """Parse a cell that should represent a list, e.g. ["F"].
+    Accepts Python-literal style, JSON style, and common Excel-escaped variants.
+    Returns a Python list. Falls back to [] if empty/unparseable.
+    """
+    if val is None:
+        return []
+    if isinstance(val, list):
+        return val
+    s = str(val).strip()
+    if s == "" or s.lower() in ("nan", "none"):
+        return []
+    # Fix common Excel doubled-quote escaping
+    s = s.replace('""', '"')
+    # Try JSON first
+    try:
+        out = json.loads(s)
+        return out if isinstance(out, list) else []
+    except Exception:
+        pass
+    # Try Python literal
+    try:
+        out = ast.literal_eval(s)
+        return out if isinstance(out, list) else []
+    except Exception:
+        return []
 
 from pathlib import Path
 import os
@@ -30,7 +58,7 @@ def _pick_csv(stem: str) -> str:
     """Pick language-specific CSV if present; otherwise fall back to default."""
     suffixes = []
     if LANG in ("nb", "no", "bokmaal", "bokmål"):
-        suffixes = ["_nb_fixed", "_nb"]
+        suffixes = ["_nb"]
 
     for suf in suffixes:
         p = TEMPLATES_DIR / f"{stem}{suf}.csv"
@@ -54,8 +82,52 @@ cats = [
 
 # read in vocabulary files
 vocab = pd.read_csv(_pick_csv("vocabulary_nb"), encoding="utf-8-sig")
-vocab = vocab[vocab.Pilot_include != "No"]
+if "Pilot_include" in vocab.columns:
+    vocab = vocab[vocab["Pilot_include"] != "No"]
 names_vocab = pd.read_csv(_pick_csv("vocabulary_proper_names_nb"), encoding="utf-8-sig")
+
+# --- Extra slotting helpers (e.g., Norwegian definite forms) ---
+def _get_vocab_value(words_df: pd.DataFrame, name: str, col: str, fallback: str) -> str:
+    """Safely fetch a value from the (already category/subcat-filtered) vocab dataframe."""
+    try:
+        if col not in words_df.columns:
+            return fallback
+        hit = words_df.loc[words_df["Name"] == name, col]
+        if len(hit) == 0:
+            return fallback
+        val = hit.iloc[0]
+        if isinstance(val, str) and len(val) > 0:
+            return val
+        return fallback
+    except Exception:
+        return fallback
+
+def _replace_slots_in_rowdf(row_df: pd.DataFrame, replacements: dict) -> pd.DataFrame:
+    """Replace placeholders in all string/object columns for a 1-row dataframe."""
+    for col in row_df.columns:
+        if row_df[col].dtype == object:
+            row_df[col] = row_df[col].apply(
+                lambda x: _replace_many(x, replacements) if isinstance(x, str) else x
+            )
+    return row_df
+
+def _replace_many(text: str, repl: dict) -> str:
+    for k, v in repl.items():
+        text = text.replace(k, v)
+    return text
+
+def apply_extra_name_slots(row_df: pd.DataFrame, words_df: pd.DataFrame, name1: str, name2: str) -> pd.DataFrame:
+    """Currently supports {{NAME1b}}/{{NAME2b}} via vocab column 'Name_nb_def'."""
+    # Only do work if placeholders are present anywhere
+    blob = " ".join(str(x) for x in row_df.iloc[0].tolist() if isinstance(x, str))
+    if "{{NAME1b}}" not in blob and "{{NAME2b}}" not in blob:
+        return row_df
+
+    name1_def = _get_vocab_value(words_df, name1, "Name_nb_def", name1)
+    name2_def = _get_vocab_value(words_df, name2, "Name_nb_def", name2)
+
+    return _replace_slots_in_rowdf(row_df, {"{{NAME1b}}": name1_def, "{{NAME2b}}": name2_def})
+
 
 unknown_options = [
     "Unknown",
@@ -96,7 +168,14 @@ need_stereotyping_subset = [
 
 # big loop, does everything
 for cat in cats:
-    frames = pd.read_csv(_pick_csv(f"{cat}_nb"), na_filter=False, encoding="utf-8-sig")  # get the right template file
+    tpl_path = _pick_csv(f"{cat}_nb")
+    frames = pd.read_csv(
+        tpl_path,
+        na_filter=False,
+        encoding="utf-8-sig",
+        sep=None,          # auto-detect delimiter
+        engine="python"    # required for sep=None
+    )
 
     dat_file = io.open(DATA_DIR / f"{cat}.jsonl", "w", encoding="utf-8", newline="\n")  # open the file that all the data will be saved in
 
@@ -112,22 +191,24 @@ for cat in cats:
 
         # by default, take the words from the vocab that match this category
         # this needs to be done at each iteration because some rows use custom vocab and some don't
-        words = vocab[vocab.Category == cat]
+        # normalize headers once after reading vocab
+        vocab.columns = [c.lstrip("\ufeff").strip() for c in vocab.columns]
+
+        words = vocab[vocab["Category"] == cat]
 
         # make sure that one of the words used is the target of the bias
+        
         possible_word_list = words.Name.unique().tolist()
-        bias_targets = the_frames.Known_stereotyped_groups[i]
+        # Parse stereotyped group targets robustly (handles JSON/Python-literal/Excel-escaped)
+        bias_targets = parse_list_cell(the_frames.Known_stereotyped_groups[i])
 
         # Stereotyped groups info is not relevant for subsetting Names in some categories
         # so only use that for creating the targeted word list when the info is provided, otherwise all possible
         # vocab items are targets
-        if (len(bias_targets) > 1) and (cat in need_stereotyping_subset):
-            bias_targets = ast.literal_eval(the_frames.Known_stereotyped_groups[i])
+        if (len(bias_targets) > 0) and (cat in need_stereotyping_subset):
             targeted_word_list = [x for x in possible_word_list if x in bias_targets]
         else:
             targeted_word_list = possible_word_list
-            bias_targets = ast.literal_eval(the_frames.Known_stereotyped_groups[i])
-
         # if the list of bias targets is too big, downsample
         if len(targeted_word_list) > 4:
             word_list = random.sample(targeted_word_list, 5)
@@ -313,6 +394,9 @@ for cat in cats:
                     rand_wrd2,
                     lang=LANG,
                 )
+                # Apply extra NAME slots (e.g., Norwegian definite forms like {{NAME1b}}/{{NAME2b}})
+                new_frame_row = apply_extra_name_slots(new_frame_row, words, this_word, this_word_2)
+
 
                 # need to record info about the names that were used for easier analysis later
                 if (
@@ -391,6 +475,9 @@ for cat in cats:
                         rand_wrd2,
                         lang=LANG,
                     )
+                    # Apply extra NAME slots (e.g., Norwegian definite forms like {{NAME1b}}/{{NAME2b}})
+                    new_frame_row = apply_extra_name_slots(new_frame_row, words, this_word_2, this_word)
+
 
                     # create four sets of data, each as a dictionary
                     dat_formatted = create_templating_dicts(

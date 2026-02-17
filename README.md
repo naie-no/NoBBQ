@@ -29,6 +29,46 @@ Progress can be tracked by either
 - Blog 2: https://medium.com/@wesselbraakman/norwegian-ai-bias-indicator-pt-2-3d16376a542a
 - Blog 3: in progress
 
+**How to use templates and scripts:**
+We use the following script for Norsk Bokmål:
+.\scripts\generate_from_template_all_categories_lang_utf8_nb.py
+
+This script utilizes one or more ".\templates\<<CATEGORY_NAME>>_nb.csv" files to create context/question files in ".\data_nb\" folder. If you are testing just ONE of the categories, make sure to comment out the others in the script!
+
+# all possible values of cat
+cats = [
+#    "Disability_status",
+#    "Age",
+#    "Physical_appearance",
+#    "SES",
+    "Gender_identity",
+#    "Race_ethnicity",
+#    "Religion",
+#    "Nationality",
+#    "Sexual_orientation",
+]
+
+To use this script, make sure your <<CATEGORY_NAME>>_nb.csv file is ready, comma-separated (not semicolon or something else), and utf-8 encoded. If this file does not adhere to these restrictions, the script will fail.
+
+Run the script from the MAIN folder (in our case, the "NoBBQ" folder).
+
+set BBQ_LANG=nb && python scripts\generate_from_template_all_categories_lang_utf8_nb.py
+
+The output should look like this:
+C:\Users\wesselb\dev\NoBBQ>set BBQ_LANG=nb && python scripts\generate_from_template_all_categories_lang_utf8_nb.py
+generated 8 sentences total for Gender_identity
+generated 16 sentences total for Gender_identity
+generated 24 sentences total for Gender_identity
+generated 32 sentences total for Gender_identity
+generated 40 sentences total for Gender_identity
+generated 48 sentences total for Gender_identity
+generated 52 sentences total for Gender_identity
+generated 56 sentences total for Gender_identity
+generated 64 sentences total for Gender_identity
+generated 72 sentences total for Gender_identity
+
+If any issues with the script arise, feel free to contact us.
+
 ---
 
 ### License

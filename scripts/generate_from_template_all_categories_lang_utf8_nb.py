@@ -73,10 +73,10 @@ cats = [
 #    "Age",
 #    "Physical_appearance",
 #    "SES",
-    "Gender_identity",
+#    "Gender_identity",
 #    "Race_ethnicity",
 #    "Religion",
-#    "Nationality",
+    "Nationality",
 #    "Sexual_orientation",
 ]
 
@@ -129,7 +129,7 @@ def apply_extra_name_slots(row_df: pd.DataFrame, words_df: pd.DataFrame, name1: 
     return _replace_slots_in_rowdf(row_df, {"{{NAME1b}}": name1_def, "{{NAME2b}}": name2_def})
 
 
-unknown_options = [
+UNKNOWN_OPTIONS_EN = [
     "Unknown",
     "Cannot be determined",
     "Can't be determined",
@@ -142,21 +142,21 @@ unknown_options = [
     "Undetermined",
 ]
 
-# Use Norwegian "unknown" answer options when generating Bokmål data
-if LANG in ("nb", "no", "bokmaal", "bokmål"):
-    unknown_options = [
-        "Ukjent",
-        "Kan ikke avgjøres",
-        "Kan ikke fastslås",
-        "Ikke mulig å avgjøre",
-        "Kan ikke besvares",
-        "Ikke kjent",
-        "Ikke nok info",
-        "Ikke nok informasjon",
-        "Kan ikke svare",
-        "Uavklart",
-    ]
+UNKNOWN_OPTIONS_NB = [
+    "Ukjent",
+    "Kan ikke avgjøres",
+    "Kan ikke fastslås",
+    "Ikke mulig å avgjøre",
+    "Kan ikke besvares",
+    "Ikke kjent",
+    "Ikke nok info",
+    "Ikke nok informasjon",
+    "Kan ikke svare",
+    "Uavklart",
+]
 
+unknown_options_lang = UNKNOWN_OPTIONS_NB
+# if LANG in ("nb","no","bokmaal","bokmål") else UNKNOWN_OPTIONS_EN
 
 # these have items that need to have the argument order manually reversed
 need_stereotyping_subset = [
@@ -173,7 +173,7 @@ for cat in cats:
         tpl_path,
         na_filter=False,
         encoding="utf-8-sig",
-        sep=None,          # auto-detect delimiter
+        sep=";",          # auto-detect delimiter
         engine="python"    # required for sep=None
     )
 
@@ -437,12 +437,14 @@ for cat in cats:
                     Name1_info = this_word
                     Name2_info = this_word_2
 
+                print("Passing unknown_options:", unknown_options_lang[:3])
+
                 # create four sets of data, each as a dictionary
                 dat_formatted = create_templating_dicts(
                     cat,
                     new_frame_row,
                     this_subcat,
-                    unknown_options,
+                    unknown_options_lang,
                     frame_cols,
                     bias_targets,
                     this_word,
@@ -451,6 +453,24 @@ for cat in cats:
                     Name2_info,
                     nn,
                 )
+                EN_UNKNOWN = {
+                    "Unknown",
+                    "Cannot be determined",
+                    "Can't be determined",
+                    "Not answerable",
+                    "Not known",
+                    "Not enough info",
+                    "Not enough information",
+                    "Cannot answer",
+                    "Can't answer",
+                    "Undetermined",
+                }
+
+                if LANG == "nb":
+                    for d in dat_formatted:
+                        for key in ("ans0", "ans1", "ans2"):
+                            if d.get(key) in EN_UNKNOWN:
+                                raise RuntimeError(f"English unknown option leaked into nb output: {d.get(key)}")
                 nn += 4
                 for item in dat_formatted:
                     dat_file.write(json.dumps(item, default=str, ensure_ascii=False))
@@ -484,7 +504,7 @@ for cat in cats:
                         cat,
                         new_frame_row,
                         this_subcat,
-                        unknown_options,
+                        unknown_options_lang,
                         frame_cols,
                         bias_targets,
                         this_word_2,

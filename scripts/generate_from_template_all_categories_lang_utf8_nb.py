@@ -14,7 +14,7 @@ from pathlib import Path
 import os
 
 # Language handling: set environment variable BBQ_LANG=nb to generate Bokmål versions
-LANGUAGE = os.environ.get("BBQ_LANG", "en").lower()
+LANGUAGE = "nb"
 
 # Project root: default to current working directory (where you run the script from)
 # You can override by setting BBQ_DIR to a specific path.
@@ -22,7 +22,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_ROOT = SCRIPT_DIR.parent
 ROOT_DIR = Path(os.environ.get("BBQ_DIR", DEFAULT_ROOT)).resolve()
 TEMPLATES_DIR = ROOT_DIR / "templates"
-DATA_DIR = ROOT_DIR / ("data" if LANGUAGE == "en" else "data_nb")
+DATA_DIR = ROOT_DIR / "data_nb"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # all possible values of cat
@@ -38,20 +38,6 @@ CATEGORIES = [
 #    "Sexual_orientation",
 ]
 
-
-UNKNOWN_OPTIONS_EN = [
-    "Unknown",
-    "Cannot be determined",
-    "Can't be determined",
-    "Not answerable",
-    "Not known",
-    "Not enough info",
-    "Not enough information",
-    "Cannot answer",
-    "Can't answer",
-    "Undetermined",
-]
-
 UNKNOWN_OPTIONS_NB = [
     "Ukjent",
     "Kan ikke avgjøres",
@@ -62,11 +48,8 @@ UNKNOWN_OPTIONS_NB = [
     "Ikke nok info",
     "Ikke nok informasjon",
     "Kan ikke svare",
-    "Uavklart",
+    "Uavklart"
 ]
-
-unknown_options_lang = UNKNOWN_OPTIONS_NB # NOTE: This does not allow for language other than Norsk Bokmål. TODO: FIX
-# if LANG in ("nb","no","bokmaal","bokmål") else UNKNOWN_OPTIONS_EN
 
 # these have items that need to have the argument order manually reversed
 need_stereotyping_subset = [
@@ -166,17 +149,17 @@ if "Pilot_include" in vocab.columns:
 names_vocab = pd.read_csv(_pick_csv("vocabulary_proper_names_nb"), encoding="utf-8-sig")
 
 # big loop, does everything
-for cat in CATEGORIES:
-    tpl_path = _pick_csv(f"{cat}_nb")
+for category in CATEGORIES:
+    template_path = _pick_csv(f"{category}_nb")
     frames = pd.read_csv(
-        tpl_path,
+        template_path,
         na_filter=False,
         encoding="utf-8-sig",
         sep=";",          # auto-detect delimiter
         engine="python"    # required for sep=None
     )
 
-    dat_file = io.open(DATA_DIR / f"{cat}.jsonl", "w", encoding="utf-8", newline="\n")  # open the file that all the data will be saved in
+    dat_file = io.open(DATA_DIR / f"{category}.jsonl", "w", encoding="utf-8", newline="\n")  # open the file that all the data will be saved in
 
     the_frames = frames[
         frames.Ambiguous_Context != ""
@@ -193,7 +176,7 @@ for cat in CATEGORIES:
         # normalize headers once after reading vocab
         vocab.columns = [c.lstrip("\ufeff").strip() for c in vocab.columns]
 
-        words = vocab[vocab["Category"] == cat]
+        words = vocab[vocab["Category"] == category]
 
         # make sure that one of the words used is the target of the bias
         
@@ -204,7 +187,7 @@ for cat in CATEGORIES:
         # Stereotyped groups info is not relevant for subsetting Names in some categories
         # so only use that for creating the targeted word list when the info is provided, otherwise all possible
         # vocab items are targets
-        if (len(bias_targets) > 0) and (cat in need_stereotyping_subset):
+        if (len(bias_targets) > 0) and (category in need_stereotyping_subset):
             targeted_word_list = [x for x in possible_word_list if x in bias_targets]
         else:
             targeted_word_list = possible_word_list
@@ -252,7 +235,7 @@ for cat in CATEGORIES:
         if has_proper_name:
             # what to do if this is part of the race_ethnicity subset
             # this needs to pull from the set of first names that have ethnicity information about them
-            if cat == "Race_ethnicity":
+            if category == "Race_ethnicity":
                 if len(bias_targets) >= 1:
                     first_names_full = names_vocab[names_vocab.First_last == "first"]
                     first_names = first_names_full[
@@ -264,7 +247,7 @@ for cat in CATEGORIES:
                 word_list = random.sample(word_list, 5)  # for downsampling
             # what to do if this is part of the gender_identity subset
             # this needs to pull from the set of first names that do not have ethnicity information
-            elif cat == "Gender_identity":
+            elif category == "Gender_identity":
                 first_names = names_vocab[names_vocab.First_last == "first_only"]
                 # specify female so that the other NAME variable can be set to male and there's always a contrast
                 female_first_names = first_names[first_names.gender == "F"]
@@ -289,7 +272,7 @@ for cat in CATEGORIES:
 
             # only create new_word_list here if it wasn't already created through Names column
             if len(critical_words) < 2:
-                if (len(bias_targets) > 0) and (cat in need_stereotyping_subset):
+                if (len(bias_targets) > 0) and (category in need_stereotyping_subset):
                     new_word_list = [
                         n for n in possible_word_list if n not in bias_targets
                     ]
@@ -300,14 +283,14 @@ for cat in CATEGORIES:
                 else:
                     new_word_list = [n for n in word_list if n != word]
                 # for SES, need to check to make sure it's grabbing from the other (low/high) category
-                if cat == "SES" and not has_proper_name:
+                if category == "SES" and not has_proper_name:
                     the_word_cat = words.loc[words["Name"] == word, "Info"].iloc[0]
                     Name1_info = the_word_cat
                     new_options = words[words.Info != the_word_cat]
                     new_word_list = new_options.Name.unique().tolist()
                 # for gender, keep track of gender of the name picked and select a name of a different gender for the
                 # second name variable
-                if cat == "Gender_identity" and has_proper_name:
+                if category == "Gender_identity" and has_proper_name:
                     the_word_gender = first_names.loc[
                         first_names["Name"] == word, "gender"
                     ].iloc[0]
@@ -316,7 +299,7 @@ for cat in CATEGORIES:
                     new_word_list = new_options.Name.unique().tolist()
                     new_word_list = random.sample(new_word_list, 5)  # for downsampling
                 # for race/ethnicity...
-                if cat == "Race_ethnicity" and has_proper_name:
+                if category == "Race_ethnicity" and has_proper_name:
                     # keep track of gender and ethnicity of the name in question
                     the_word_gender = first_names.loc[
                         first_names["Name"] == word, "gender"
@@ -397,11 +380,11 @@ for cat in CATEGORIES:
                 # need to record info about the names that were used for easier analysis later
                 if (
                     Name1_info is not None
-                    and cat == "Race_ethnicity"
+                    and category == "Race_ethnicity"
                     and has_proper_name
                 ):
                     Name2_info = Name2_info_dict[this_word_2]
-                elif cat == "Gender_identity" and has_proper_name:
+                elif category == "Gender_identity" and has_proper_name:
                     try:
                         Name2_info = first_names.loc[
                             first_names["Name"] == this_word_2, "gender"
@@ -414,8 +397,8 @@ for cat in CATEGORIES:
                         if k == 0:
                             Name1_info = this_frame_row.NAME1_info[0] + "_" + Name1_info
                         Name2_info = this_frame_row.NAME2_info[0] + "_" + Name2_info
-                elif cat == "Nationality" or (
-                    cat == "SES" and this_subcat == "Occupation"
+                elif category == "Nationality" or (
+                    category == "SES" and this_subcat == "Occupation"
                 ):
                     # need to get the relevant info about the name from the vocab file
                     Name1_info = vocab.loc[vocab["Name"] == word, "Info"].iloc[0]
@@ -433,14 +416,14 @@ for cat in CATEGORIES:
                     Name1_info = word
                     Name2_info = this_word_2
 
-                print("Passing unknown_options:", unknown_options_lang[:3])
+                print("Passing unknown_options:", UNKNOWN_OPTIONS_NB[:3])
 
                 # create four sets of data, each as a dictionary
                 dat_formatted = create_templating_dicts(
-                    cat,
+                    category,
                     new_frame_row,
                     this_subcat,
-                    unknown_options_lang,
+                    UNKNOWN_OPTIONS_NB,
                     frame_cols,
                     bias_targets,
                     word,
@@ -474,9 +457,9 @@ for cat in CATEGORIES:
                 dat_file.flush()
 
                 if (
-                    (cat in need_stereotyping_subset)
+                    (category in need_stereotyping_subset)
                     or has_proper_name
-                    or (cat == "SES" and this_subcat == "Occupation")
+                    or (category == "SES" and this_subcat == "Occupation")
                 ):
                     # flip input of this_word and this_word_2
                     new_frame_row = do_slotting(
@@ -497,10 +480,10 @@ for cat in CATEGORIES:
 
                     # create four sets of data, each as a dictionary
                     dat_formatted = create_templating_dicts(
-                        cat,
+                        category,
                         new_frame_row,
                         this_subcat,
-                        unknown_options_lang,
+                        UNKNOWN_OPTIONS_NB,
                         frame_cols,
                         bias_targets,
                         this_word_2,
@@ -515,6 +498,6 @@ for cat in CATEGORIES:
                         dat_file.write("\n")
                     dat_file.flush()
 
-        print("generated %s sentences total for %s in file %s" % (str(nn), cat, dat_file.name))
+        print("generated %s sentences total for %s in file %s" % (str(nn), category, dat_file.name))
 
     dat_file.close()

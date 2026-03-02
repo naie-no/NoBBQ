@@ -10,8 +10,71 @@ except ImportError:
 import random
 import re
 import ast
+from pathlib import Path
+import os
 
-import json
+# Language handling: set environment variable BBQ_LANG=nb to generate Bokmål versions
+LANGUAGE = os.environ.get("BBQ_LANG", "en").lower()
+
+# Project root: default to current working directory (where you run the script from)
+# You can override by setting BBQ_DIR to a specific path.
+SCRIPT_DIR = Path(__file__).resolve().parent
+DEFAULT_ROOT = SCRIPT_DIR.parent
+ROOT_DIR = Path(os.environ.get("BBQ_DIR", DEFAULT_ROOT)).resolve()
+TEMPLATES_DIR = ROOT_DIR / "templates"
+DATA_DIR = ROOT_DIR / ("data" if LANGUAGE == "en" else "data_nb")
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+# all possible values of cat
+CATEGORIES = [
+#    "Disability_status",
+#    "Age",
+#    "Physical_appearance",
+#    "SES",
+    "Gender_identity",
+#    "Race_ethnicity",
+#    "Religion",
+#    "Nationality",
+#    "Sexual_orientation",
+]
+
+
+UNKNOWN_OPTIONS_EN = [
+    "Unknown",
+    "Cannot be determined",
+    "Can't be determined",
+    "Not answerable",
+    "Not known",
+    "Not enough info",
+    "Not enough information",
+    "Cannot answer",
+    "Can't answer",
+    "Undetermined",
+]
+
+UNKNOWN_OPTIONS_NB = [
+    "Ukjent",
+    "Kan ikke avgjøres",
+    "Kan ikke fastslås",
+    "Ikke mulig å avgjøre",
+    "Kan ikke besvares",
+    "Ikke kjent",
+    "Ikke nok info",
+    "Ikke nok informasjon",
+    "Kan ikke svare",
+    "Uavklart",
+]
+
+unknown_options_lang = UNKNOWN_OPTIONS_NB # NOTE: This does not allow for language other than Norsk Bokmål. TODO: FIX
+# if LANG in ("nb","no","bokmaal","bokmål") else UNKNOWN_OPTIONS_EN
+
+# these have items that need to have the argument order manually reversed
+need_stereotyping_subset = [
+    "Race_ethnicity",
+    "Religion",
+    "Nationality",
+    "Sexual_orientation",
+]
 
 def parse_list_cell(val):
     """Parse a cell that should represent a list, e.g. ["F"].
@@ -40,24 +103,10 @@ def parse_list_cell(val):
     except Exception:
         return []
 
-from pathlib import Path
-import os
-
-# Language handling: set environment variable BBQ_LANG=nb to generate Bokmål versions
-LANG = os.environ.get("BBQ_LANG", "en").lower()
-
-# Project root: default to current working directory (where you run the script from)
-# You can override by setting BBQ_DIR to a specific path.
-SCRIPT_DIR = Path(__file__).resolve().parent
-DEFAULT_ROOT = SCRIPT_DIR.parent
-ROOT_DIR = Path(os.environ.get("BBQ_DIR", DEFAULT_ROOT)).resolve()
-TEMPLATES_DIR = ROOT_DIR / "templates"
-DATA_DIR = ROOT_DIR / ("data" if LANG == "en" else "data_nb")
-DATA_DIR.mkdir(parents=True, exist_ok=True)
 def _pick_csv(stem: str) -> str:
     """Pick language-specific CSV if present; otherwise fall back to default."""
     suffixes = []
-    if LANG in ("nb", "no", "bokmaal", "bokmål"):
+    if LANGUAGE in ("nb", "no", "bokmaal", "bokmål"):
         suffixes = ["_nb"]
 
     for suf in suffixes:
@@ -67,24 +116,6 @@ def _pick_csv(stem: str) -> str:
 
     return str(TEMPLATES_DIR / f"{stem}.csv")
 
-# all possible values of cat
-cats = [
-#    "Disability_status",
-#    "Age",
-#    "Physical_appearance",
-#    "SES",
-#    "Gender_identity",
-#    "Race_ethnicity",
-#    "Religion",
-    "Nationality",
-#    "Sexual_orientation",
-]
-
-# read in vocabulary files
-vocab = pd.read_csv(_pick_csv("vocabulary_nb"), encoding="utf-8-sig")
-if "Pilot_include" in vocab.columns:
-    vocab = vocab[vocab["Pilot_include"] != "No"]
-names_vocab = pd.read_csv(_pick_csv("vocabulary_proper_names_nb"), encoding="utf-8-sig")
 
 # --- Extra slotting helpers (e.g., Norwegian definite forms) ---
 def _get_vocab_value(words_df: pd.DataFrame, name: str, col: str, fallback: str) -> str:
@@ -116,7 +147,7 @@ def _replace_many(text: str, repl: dict) -> str:
         text = text.replace(k, v)
     return text
 
-def apply_extra_name_slots(row_df: pd.DataFrame, words_df: pd.DataFrame, name1: str, name2: str) -> pd.DataFrame:
+def _apply_extra_name_slots(row_df: pd.DataFrame, words_df: pd.DataFrame, name1: str, name2: str) -> pd.DataFrame:
     """Currently supports {{NAME1b}}/{{NAME2b}} via vocab column 'Name_nb_def'."""
     # Only do work if placeholders are present anywhere
     blob = " ".join(str(x) for x in row_df.iloc[0].tolist() if isinstance(x, str))
@@ -128,46 +159,14 @@ def apply_extra_name_slots(row_df: pd.DataFrame, words_df: pd.DataFrame, name1: 
 
     return _replace_slots_in_rowdf(row_df, {"{{NAME1b}}": name1_def, "{{NAME2b}}": name2_def})
 
-
-UNKNOWN_OPTIONS_EN = [
-    "Unknown",
-    "Cannot be determined",
-    "Can't be determined",
-    "Not answerable",
-    "Not known",
-    "Not enough info",
-    "Not enough information",
-    "Cannot answer",
-    "Can't answer",
-    "Undetermined",
-]
-
-UNKNOWN_OPTIONS_NB = [
-    "Ukjent",
-    "Kan ikke avgjøres",
-    "Kan ikke fastslås",
-    "Ikke mulig å avgjøre",
-    "Kan ikke besvares",
-    "Ikke kjent",
-    "Ikke nok info",
-    "Ikke nok informasjon",
-    "Kan ikke svare",
-    "Uavklart",
-]
-
-unknown_options_lang = UNKNOWN_OPTIONS_NB
-# if LANG in ("nb","no","bokmaal","bokmål") else UNKNOWN_OPTIONS_EN
-
-# these have items that need to have the argument order manually reversed
-need_stereotyping_subset = [
-    "Race_ethnicity",
-    "Religion",
-    "Nationality",
-    "Sexual_orientation",
-]
+# read in vocabulary files
+vocab = pd.read_csv(_pick_csv("vocabulary_nb"), encoding="utf-8-sig")
+if "Pilot_include" in vocab.columns:
+    vocab = vocab[vocab["Pilot_include"] != "No"]
+names_vocab = pd.read_csv(_pick_csv("vocabulary_proper_names_nb"), encoding="utf-8-sig")
 
 # big loop, does everything
-for cat in cats:
+for cat in CATEGORIES:
     tpl_path = _pick_csv(f"{cat}_nb")
     frames = pd.read_csv(
         tpl_path,
@@ -280,16 +279,13 @@ for cat in cats:
                 word_list = random.sample(word_list, 6)  # for downsampling
 
         # iterate over each word in word_list
-        for j in range(len(word_list)):
+        for word in word_list:
             # initialize variables for later
             Name1_info = None
             Name2_info = None
             rand_wrd1 = ""
             rand_wrd2 = ""
             Name2_info_dict = {}
-
-            # current target word
-            this_word = word_list[j]
 
             # only create new_word_list here if it wasn't already created through Names column
             if len(critical_words) < 2:
@@ -302,10 +298,10 @@ for cat in cats:
                             new_word_list, 5
                         )  # downsample when needed
                 else:
-                    new_word_list = [n for n in word_list if n != this_word]
+                    new_word_list = [n for n in word_list if n != word]
                 # for SES, need to check to make sure it's grabbing from the other (low/high) category
                 if cat == "SES" and not has_proper_name:
-                    the_word_cat = words.loc[words["Name"] == this_word, "Info"].iloc[0]
+                    the_word_cat = words.loc[words["Name"] == word, "Info"].iloc[0]
                     Name1_info = the_word_cat
                     new_options = words[words.Info != the_word_cat]
                     new_word_list = new_options.Name.unique().tolist()
@@ -313,7 +309,7 @@ for cat in cats:
                 # second name variable
                 if cat == "Gender_identity" and has_proper_name:
                     the_word_gender = first_names.loc[
-                        first_names["Name"] == this_word, "gender"
+                        first_names["Name"] == word, "gender"
                     ].iloc[0]
                     Name1_info = the_word_gender
                     new_options = first_names[first_names.gender != the_word_gender]
@@ -323,10 +319,10 @@ for cat in cats:
                 if cat == "Race_ethnicity" and has_proper_name:
                     # keep track of gender and ethnicity of the name in question
                     the_word_gender = first_names.loc[
-                        first_names["Name"] == this_word, "gender"
+                        first_names["Name"] == word, "gender"
                     ].iloc[0]
                     the_word_eth = first_names.loc[
-                        first_names["Name"] == this_word, "ethnicity"
+                        first_names["Name"] == word, "ethnicity"
                     ].iloc[0]
                     Name1_info = the_word_gender + "-" + the_word_eth
                     # select a last name that matches ethnicity, then put them together
@@ -336,7 +332,7 @@ for cat in cats:
                     ]
                     last_names_list = last_names.Name.unique().tolist()
                     this_last_name = random.choice(last_names_list)
-                    this_word = this_word + " " + this_last_name
+                    word = word + " " + this_last_name
                     # create a list of names for the second name var w/ same gender
                     # but ethnicity that's not one of the bias targets for that template
                     other_first_names = first_names_full[
@@ -385,17 +381,17 @@ for cat in cats:
                 new_frame_row = do_slotting(
                     this_frame_row,
                     frame_cols,
-                    this_word,
+                    word,
                     None,
                     this_word_2,
                     None,
                     lex_div,
                     rand_wrd1,
                     rand_wrd2,
-                    lang=LANG,
+                    lang=LANGUAGE,
                 )
                 # Apply extra NAME slots (e.g., Norwegian definite forms like {{NAME1b}}/{{NAME2b}})
-                new_frame_row = apply_extra_name_slots(new_frame_row, words, this_word, this_word_2)
+                new_frame_row = _apply_extra_name_slots(new_frame_row, words, word, this_word_2)
 
 
                 # need to record info about the names that were used for easier analysis later
@@ -422,7 +418,7 @@ for cat in cats:
                     cat == "SES" and this_subcat == "Occupation"
                 ):
                     # need to get the relevant info about the name from the vocab file
-                    Name1_info = vocab.loc[vocab["Name"] == this_word, "Info"].iloc[0]
+                    Name1_info = vocab.loc[vocab["Name"] == word, "Info"].iloc[0]
                     Name2_info = vocab.loc[vocab["Name"] == this_word_2, "Info"].iloc[0]
                 elif "NAME1_info" in frame_cols:
                     # for when the info about the name variables is stored in the templates
@@ -430,11 +426,11 @@ for cat in cats:
                         Name1_info = this_frame_row.NAME1_info[0]
                         Name2_info = this_frame_row.NAME2_info[0]
                     else:
-                        Name1_info = this_word
+                        Name1_info = word
                         Name2_info = this_word_2
                 else:
                     # if none of the above apply, just store the info as the actual string used in the name
-                    Name1_info = this_word
+                    Name1_info = word
                     Name2_info = this_word_2
 
                 print("Passing unknown_options:", unknown_options_lang[:3])
@@ -447,7 +443,7 @@ for cat in cats:
                     unknown_options_lang,
                     frame_cols,
                     bias_targets,
-                    this_word,
+                    word,
                     this_word_2,
                     Name1_info,
                     Name2_info,
@@ -466,7 +462,7 @@ for cat in cats:
                     "Undetermined",
                 }
 
-                if LANG == "nb":
+                if LANGUAGE == "nb":
                     for d in dat_formatted:
                         for key in ("ans0", "ans1", "ans2"):
                             if d.get(key) in EN_UNKNOWN:
@@ -488,15 +484,15 @@ for cat in cats:
                         frame_cols,
                         this_word_2,
                         None,
-                        this_word,
+                        word,
                         None,
                         lex_div,
                         rand_wrd1,
                         rand_wrd2,
-                        lang=LANG,
+                        lang=LANGUAGE,
                     )
                     # Apply extra NAME slots (e.g., Norwegian definite forms like {{NAME1b}}/{{NAME2b}})
-                    new_frame_row = apply_extra_name_slots(new_frame_row, words, this_word_2, this_word)
+                    new_frame_row = _apply_extra_name_slots(new_frame_row, words, this_word_2, word)
 
 
                     # create four sets of data, each as a dictionary
@@ -508,7 +504,7 @@ for cat in cats:
                         frame_cols,
                         bias_targets,
                         this_word_2,
-                        this_word,
+                        word,
                         Name2_info,
                         Name1_info,
                         nn,
@@ -519,6 +515,6 @@ for cat in cats:
                         dat_file.write("\n")
                     dat_file.flush()
 
-        print("generated %s sentences total for %s" % (str(nn), cat))
+        print("generated %s sentences total for %s in file %s" % (str(nn), cat, dat_file.name))
 
     dat_file.close()

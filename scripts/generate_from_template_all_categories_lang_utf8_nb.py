@@ -52,7 +52,7 @@ UNKNOWN_OPTIONS_NB = [
 ]
 
 # these have items that need to have the argument order manually reversed
-need_stereotyping_subset = [
+NEED_STEREOTYPING_SUBSET = [
     "Race_ethnicity",
     "Religion",
     "Nationality",
@@ -149,7 +149,11 @@ if "Pilot_include" in vocab.columns:
 names_vocab = pd.read_csv(_pick_csv("vocabulary_proper_names_nb"), encoding="utf-8-sig")
 
 # big loop, does everything
-for category in CATEGORIES:
+for category in CATEGORIES:    
+    # open the file that all the data will be saved in
+    dat_file = io.open(DATA_DIR / f"{category}.jsonl", "w", encoding="utf-8", newline="\n")
+
+    # read in the template
     template_path = _pick_csv(f"{category}_nb")
     frames = pd.read_csv(
         template_path,
@@ -158,61 +162,52 @@ for category in CATEGORIES:
         sep=";",          # auto-detect delimiter
         engine="python"    # required for sep=None
     )
-
-    dat_file = io.open(DATA_DIR / f"{category}.jsonl", "w", encoding="utf-8", newline="\n")  # open the file that all the data will be saved in
-
     the_frames = frames[
         frames.Ambiguous_Context != ""
     ].reset_index()  # get rid of ones that are empty
     frame_cols = the_frames.columns
 
+    # Take the words from the vocab that match this category # TODO: For some reason subcategory child is missing when this is moved outside of the "i" loop. Research!
+    #words = vocab[vocab["Category"] == category]
+    #possible_word_list = words.Name.unique().tolist()
+
     # initialize item id counter
     nn = 0
-
     for i in range(len(the_frames)):
-
         # by default, take the words from the vocab that match this category
         # this needs to be done at each iteration because some rows use custom vocab and some don't
+        # TODO: This doesn't make sense to me, why can't it be outside this loop?
+        
         # normalize headers once after reading vocab
         vocab.columns = [c.lstrip("\ufeff").strip() for c in vocab.columns]
-
         words = vocab[vocab["Category"] == category]
-
-        # make sure that one of the words used is the target of the bias
-        
         possible_word_list = words.Name.unique().tolist()
-        # Parse stereotyped group targets robustly (handles JSON/Python-literal/Excel-escaped)
+
+        # Retrieve stereotyped group target(s) (handles JSON/Python-literal/Excel-escaped)
         bias_targets = parse_list_cell(the_frames.Known_stereotyped_groups[i])
 
         # Stereotyped groups info is not relevant for subsetting Names in some categories
         # so only use that for creating the targeted word list when the info is provided, otherwise all possible
         # vocab items are targets
-        if (len(bias_targets) > 0) and (category in need_stereotyping_subset):
+        if (len(bias_targets) > 0) and (category in NEED_STEREOTYPING_SUBSET):
             targeted_word_list = [x for x in possible_word_list if x in bias_targets]
         else:
             targeted_word_list = possible_word_list
+        
         # if the list of bias targets is too big, downsample
+        # TODO: Why downsample?
         if len(targeted_word_list) > 4:
-            word_list = random.sample(targeted_word_list, 5)
+            word_list = random.sample(targeted_word_list, 5) # TODO: why 5, when the if checks for len > 4? Why not just check for len > 5?
         elif len(possible_word_list) < 2:  # these will be handled later
             word_list = []
         else:
             word_list = targeted_word_list
 
-        # set really helpful boolean
-        # This determines if the NAME1 and NAME2 needs to be a proper name or not
-        if "Proper_nouns_only" in frame_cols:
-            if the_frames.Proper_nouns_only[i] == "TRUE":
-                has_proper_name = True
-            else:
-                has_proper_name = False
-        else:
-            has_proper_name = False
-
+        # TODO: What is the idea here? This overrides the logic above when the row has a subcategory
         # if the word list needs to be further pulled apart within subcategory, do that here
         if "Subcategory" in frame_cols:
             this_subcat = the_frames.Subcategory[i]
-            if len(this_subcat) > 1:
+            if len(this_subcat) > 1: # TODO: why check for len > 1? Shouldn't it just check if it's not empty?
                 words = words[words.SubCat == this_subcat]
                 word_list = words.Name.unique().tolist()
                 if len(word_list) > 5:
@@ -231,8 +226,14 @@ for category in CATEGORIES:
         else:  # still need to initialize this variable if it's one of the cats w/out "Names"
             critical_words = ""
 
+        # Determine if  NAME1 and NAME2 needs to be a proper name or not
+        if "Proper_nouns_only" in frame_cols and the_frames.Proper_nouns_only[i] == "TRUE":
+            needs_proper_name = True
+        else:
+            needs_proper_name = False
+
         # check if this one needs to use proper names
-        if has_proper_name:
+        if needs_proper_name:
             # what to do if this is part of the race_ethnicity subset
             # this needs to pull from the set of first names that have ethnicity information about them
             if category == "Race_ethnicity":
@@ -266,15 +267,15 @@ for category in CATEGORIES:
             # initialize variables for later
             Name1_info = None
             Name2_info = None
-            rand_wrd1 = ""
-            rand_wrd2 = ""
+            random_word_1 = ""
+            random_word_2 = ""
             Name2_info_dict = {}
 
             # only create new_word_list here if it wasn't already created through Names column
             if len(critical_words) < 2:
-                if (len(bias_targets) > 0) and (category in need_stereotyping_subset):
+                if (len(bias_targets) > 0) and (category in NEED_STEREOTYPING_SUBSET):
                     new_word_list = [
-                        n for n in possible_word_list if n not in bias_targets
+                        n for n in possible_word_list if n not in bias_targets # TODO: Why is not word_list used here?
                     ]
                     if len(new_word_list) > 4:
                         new_word_list = random.sample(
@@ -282,15 +283,16 @@ for category in CATEGORIES:
                         )  # downsample when needed
                 else:
                     new_word_list = [n for n in word_list if n != word]
+
                 # for SES, need to check to make sure it's grabbing from the other (low/high) category
-                if category == "SES" and not has_proper_name:
+                if category == "SES" and not needs_proper_name:
                     the_word_cat = words.loc[words["Name"] == word, "Info"].iloc[0]
                     Name1_info = the_word_cat
-                    new_options = words[words.Info != the_word_cat]
+                    new_options = words[words.Info != the_word_cat] # TODO: why use "words" here and not "new_word_list"?
                     new_word_list = new_options.Name.unique().tolist()
                 # for gender, keep track of gender of the name picked and select a name of a different gender for the
                 # second name variable
-                if category == "Gender_identity" and has_proper_name:
+                if category == "Gender_identity" and needs_proper_name:
                     the_word_gender = first_names.loc[
                         first_names["Name"] == word, "gender"
                     ].iloc[0]
@@ -299,7 +301,7 @@ for category in CATEGORIES:
                     new_word_list = new_options.Name.unique().tolist()
                     new_word_list = random.sample(new_word_list, 5)  # for downsampling
                 # for race/ethnicity...
-                if category == "Race_ethnicity" and has_proper_name:
+                if category == "Race_ethnicity" and needs_proper_name:
                     # keep track of gender and ethnicity of the name in question
                     the_word_gender = first_names.loc[
                         first_names["Name"] == word, "gender"
@@ -350,15 +352,16 @@ for category in CATEGORIES:
             # results in full pairings of every possible vocab pair within the subset
             for k in range(len(new_word_list)):
                 this_word_2 = new_word_list[k]
+                # TODO: Why does this happen here?
                 this_frame_row = the_frames.iloc[[i]].reset_index()
                 lex_div = this_frame_row.Lexical_diversity[0]
 
                 # Only need to create these values when there's text in lexical diversity
                 if len(lex_div) > 1:
                     wrdlist1, wrdlist2 = return_list_from_string(lex_div)
-                    rand_wrd1 = random.choice(wrdlist1)
+                    random_word_1 = random.choice(wrdlist1)
                     if len(wrdlist2) > 1:  # sometimes there's not a WORD2
-                        rand_wrd2 = random.choice(wrdlist2)
+                        random_word_2 = random.choice(wrdlist2)
 
                 # replace frame text info with value of {{NAME}} and {{WORD}}. Check the value for each column
                 new_frame_row = do_slotting(
@@ -369,8 +372,8 @@ for category in CATEGORIES:
                     this_word_2,
                     None,
                     lex_div,
-                    rand_wrd1,
-                    rand_wrd2,
+                    random_word_1,
+                    random_word_2,
                     lang=LANGUAGE,
                 )
                 # Apply extra NAME slots (e.g., Norwegian definite forms like {{NAME1b}}/{{NAME2b}})
@@ -381,10 +384,10 @@ for category in CATEGORIES:
                 if (
                     Name1_info is not None
                     and category == "Race_ethnicity"
-                    and has_proper_name
+                    and needs_proper_name
                 ):
                     Name2_info = Name2_info_dict[this_word_2]
-                elif category == "Gender_identity" and has_proper_name:
+                elif category == "Gender_identity" and needs_proper_name:
                     try:
                         Name2_info = first_names.loc[
                             first_names["Name"] == this_word_2, "gender"
@@ -432,6 +435,8 @@ for category in CATEGORIES:
                     Name2_info,
                     nn,
                 )
+                nn += 4
+
                 EN_UNKNOWN = {
                     "Unknown",
                     "Cannot be determined",
@@ -444,21 +449,23 @@ for category in CATEGORIES:
                     "Can't answer",
                     "Undetermined",
                 }
-
+                # TODO: (Re)move? Is quality check, not logic to complete the process
                 if LANGUAGE == "nb":
                     for d in dat_formatted:
                         for key in ("ans0", "ans1", "ans2"):
                             if d.get(key) in EN_UNKNOWN:
                                 raise RuntimeError(f"English unknown option leaked into nb output: {d.get(key)}")
-                nn += 4
+                
+                # write to file
                 for item in dat_formatted:
                     dat_file.write(json.dumps(item, default=str, ensure_ascii=False))
                     dat_file.write("\n")
                 dat_file.flush()
 
+                # TODO: what is happening here? Does it make sense to have this here?
                 if (
-                    (category in need_stereotyping_subset)
-                    or has_proper_name
+                    (category in NEED_STEREOTYPING_SUBSET)
+                    or needs_proper_name
                     or (category == "SES" and this_subcat == "Occupation")
                 ):
                     # flip input of this_word and this_word_2
@@ -470,8 +477,8 @@ for category in CATEGORIES:
                         word,
                         None,
                         lex_div,
-                        rand_wrd1,
-                        rand_wrd2,
+                        random_word_1,
+                        random_word_2,
                         lang=LANGUAGE,
                     )
                     # Apply extra NAME slots (e.g., Norwegian definite forms like {{NAME1b}}/{{NAME2b}})

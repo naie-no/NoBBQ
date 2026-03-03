@@ -119,10 +119,10 @@ def _get_vocab_value(words_df: pd.DataFrame, name: str, col: str, fallback: str)
 def _replace_slots_in_rowdf(row_df: pd.DataFrame, replacements: dict) -> pd.DataFrame:
     """Replace placeholders in all string/object columns for a 1-row dataframe."""
     for col in row_df.columns:
-        if row_df[col].dtype == object:
-            row_df[col] = row_df[col].apply(
-                lambda x: _replace_many(x, replacements) if isinstance(x, str) else x
-            )
+        #if row_df[col].dtype == object:
+        row_df[col] = row_df[col].apply(
+            lambda x: _replace_many(x, replacements) if isinstance(x, str) else x
+        )
     return row_df
 
 def _replace_many(text: str, repl: dict) -> str:

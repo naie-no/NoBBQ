@@ -40,6 +40,36 @@ def parse_list_cell(val):
     except Exception:
         return []
 
+# ----------------------------
+# NEW: parse multi-key lists in the Names column
+# e.g. 'NAME1: [...]; NAME1b: [...]; NAME2: [...]; NAME2b: [...]; POSS: [...]'
+# ----------------------------
+def parse_kv_lists(cell: str) -> dict:
+    if cell is None:
+        return {}
+    s = str(cell).strip()
+    if s == "" or s.lower() in ("nan", "none"):
+        return {}
+
+    out: dict = {}
+    # Find patterns KEY: [ ... ]
+    for m in re.finditer(r'([A-Za-z0-9_]+)\s*:\s*\[([^\]]*)\]', s):
+        key = m.group(1).strip()
+        inner = m.group(2).strip()
+
+        # Try parse as python list
+        raw = "[" + inner + "]"
+        try:
+            vals = ast.literal_eval(raw)
+            if not isinstance(vals, list):
+                vals = []
+        except Exception:
+            # fallback split on commas
+            vals = [v.strip() for v in inner.split(",") if v.strip()]
+        out[key] = vals
+
+    return out
+
 from pathlib import Path
 import os
 
@@ -54,6 +84,7 @@ ROOT_DIR = Path(os.environ.get("BBQ_DIR", DEFAULT_ROOT)).resolve()
 TEMPLATES_DIR = ROOT_DIR / "templates"
 DATA_DIR = ROOT_DIR / ("data" if LANG == "en" else "data_nb")
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+
 def _pick_csv(stem: str) -> str:
     """Pick language-specific CSV if present; otherwise fall back to default."""
     suffixes = []
@@ -197,8 +228,8 @@ for cat in cats:
         words = vocab[vocab["Category"] == cat]
 
         # make sure that one of the words used is the target of the bias
-        
         possible_word_list = words.Name.unique().tolist()
+
         # Parse stereotyped group targets robustly (handles JSON/Python-literal/Excel-escaped)
         bias_targets = parse_list_cell(the_frames.Known_stereotyped_groups[i])
 
@@ -209,6 +240,7 @@ for cat in cats:
             targeted_word_list = [x for x in possible_word_list if x in bias_targets]
         else:
             targeted_word_list = possible_word_list
+
         # if the list of bias targets is too big, downsample
         if len(targeted_word_list) > 4:
             word_list = random.sample(targeted_word_list, 5)
@@ -240,12 +272,24 @@ for cat in cats:
         else:
             this_subcat = "None"
 
-        # check if there's vocab in the Names column that needs to be used
-        # info in the Names column always overrides vocab that would otherwise be used
+        # ----------------------------
+        # NEW: Names override handling
+        # - Supports old "two lists" style via return_list_from_string
+        # - Supports key-value multi-list style via parse_kv_lists
+        # ----------------------------
+        names_override = {}
         if "Names" in frame_cols:
             critical_words = the_frames.Names[i]
-            if len(critical_words) > 1:
-                word_list, new_word_list = return_list_from_string(critical_words)
+            if len(str(critical_words).strip()) > 1:
+                names_override = parse_kv_lists(critical_words)
+
+                # If the cell contains keyed lists, prefer NAME1/NAME2 as the paired lists
+                if "NAME1" in names_override and "NAME2" in names_override:
+                    word_list = names_override["NAME1"]
+                    new_word_list = names_override["NAME2"]
+                else:
+                    # Fallback to original behavior (expects two lists)
+                    word_list, new_word_list = return_list_from_string(critical_words)
         else:  # still need to initialize this variable if it's one of the cats w/out "Names"
             critical_words = ""
 
@@ -394,9 +438,37 @@ for cat in cats:
                     rand_wrd2,
                     lang=LANG,
                 )
-                # Apply extra NAME slots (e.g., Norwegian definite forms like {{NAME1b}}/{{NAME2b}})
-                new_frame_row = apply_extra_name_slots(new_frame_row, words, this_word, this_word_2)
 
+                # ----------------------------
+                # NEW: apply Names overrides AFTER do_slotting so they always win
+                # - aligned lists: NAME1b uses j, NAME2b uses k
+                # - non-aligned: POSS etc choose first or random
+                # ----------------------------
+                if names_override:
+                    repl = {}
+
+                    if "NAME1b" in names_override and j < len(names_override["NAME1b"]):
+                        repl["{{NAME1b}}"] = str(names_override["NAME1b"][j])
+                    if "NAME2b" in names_override and k < len(names_override["NAME2b"]):
+                        repl["{{NAME2b}}"] = str(names_override["NAME2b"][k])
+
+                    if "WORD1b" in names_override and j < len(names_override["WORD1b"]):
+                        repl["{{WORD1b}}"] = str(names_override["WORD1b"][j])
+                    if "WORD2b" in names_override and k < len(names_override["WORD2b"]):
+                        repl["{{WORD2b}}"] = str(names_override["WORD2b"][k])
+
+                    for key in ("POSS", "POSS2", "WORD1", "WORD2"):
+                        if key in names_override and len(names_override[key]) > 0:
+                            val = names_override[key][0] if len(names_override[key]) == 1 else random.choice(names_override[key])
+                            repl[f"{{{{{key}}}}}"] = str(val)
+
+                    if repl:
+                        new_frame_row = _replace_slots_in_rowdf(new_frame_row, repl)
+
+                # Apply extra NAME slots (e.g., Norwegian definite forms like {{NAME1b}}/{{NAME2b}})
+                # ONLY if the sheet did not provide NAME1b/NAME2b in Names override
+                if (not names_override) or ("NAME1b" not in names_override and "NAME2b" not in names_override):
+                    new_frame_row = apply_extra_name_slots(new_frame_row, words, this_word, this_word_2)
 
                 # need to record info about the names that were used for easier analysis later
                 if (
@@ -495,9 +567,33 @@ for cat in cats:
                         rand_wrd2,
                         lang=LANG,
                     )
-                    # Apply extra NAME slots (e.g., Norwegian definite forms like {{NAME1b}}/{{NAME2b}})
-                    new_frame_row = apply_extra_name_slots(new_frame_row, words, this_word_2, this_word)
 
+                    # NEW: apply overrides in flipped direction (swap indices!)
+                    if names_override:
+                        repl = {}
+
+                        # because NAME1 is now this_word_2 (index k), NAME2 is now this_word (index j)
+                        if "NAME1b" in names_override and k < len(names_override["NAME1b"]):
+                            repl["{{NAME1b}}"] = str(names_override["NAME1b"][k])
+                        if "NAME2b" in names_override and j < len(names_override["NAME2b"]):
+                            repl["{{NAME2b}}"] = str(names_override["NAME2b"][j])
+
+                        if "WORD1b" in names_override and k < len(names_override["WORD1b"]):
+                            repl["{{WORD1b}}"] = str(names_override["WORD1b"][k])
+                        if "WORD2b" in names_override and j < len(names_override["WORD2b"]):
+                            repl["{{WORD2b}}"] = str(names_override["WORD2b"][j])
+
+                        for key in ("POSS", "POSS2", "WORD1", "WORD2"):
+                            if key in names_override and len(names_override[key]) > 0:
+                                val = names_override[key][0] if len(names_override[key]) == 1 else random.choice(names_override[key])
+                                repl[f"{{{{{key}}}}}"] = str(val)
+
+                        if repl:
+                            new_frame_row = _replace_slots_in_rowdf(new_frame_row, repl)
+
+                    # Apply extra NAME slots ONLY if not provided by override
+                    if (not names_override) or ("NAME1b" not in names_override and "NAME2b" not in names_override):
+                        new_frame_row = apply_extra_name_slots(new_frame_row, words, this_word_2, this_word)
 
                     # create four sets of data, each as a dictionary
                     dat_formatted = create_templating_dicts(

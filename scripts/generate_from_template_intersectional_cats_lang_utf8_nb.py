@@ -392,7 +392,7 @@ for cat in cats:
 
                 # Only need to create these values when there's text in lexical diversity
                 if len(lex_div) > 1:
-                    wrdlist1, wrdlist2 = return_list_from_string(lex_div)
+                    wrdlist1, wrdlist2 = get_words_from_string(lex_div)
                     rand_wrd1 = random.choice(wrdlist1)
                     if len(wrdlist2) > 1:  # sometimes there's not a WORD2
                         rand_wrd2 = random.choice(wrdlist2)

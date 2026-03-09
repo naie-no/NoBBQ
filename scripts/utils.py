@@ -4,10 +4,11 @@ import random
 import re
 
 
-def return_list_from_string(inputx):
+def get_words_from_string(inputx):
     """
     This function takes a string that's formatted as
-    WORD1: [word, word]; WORD2: [word, word]
+    WORD1: [word, word]; WORD2: [word, word] or
+    NAME1: [name, name]; NAME2: [name, name]
     and separates it into two iterable lists
 
     Args:
@@ -19,30 +20,30 @@ def return_list_from_string(inputx):
     x = inputx.split(";")
     for wrd in x:
         if "WORD1" in wrd or "NAME1" in wrd:
-            wrd2 = (
+            output1 = (
                 wrd.replace("WORD1:", "")
                 .replace("{{WORD1}}:", "")
                 .replace("NAME1:", "")
                 .replace("{{NAME1}}:", "")
             )
-            wrd3 = wrd2.strip()
-            wrds = wrd3.replace("[", "").replace("]", "")
-            wrds1 = wrds.split(",")
-            wrds1 = [w.strip() for w in wrds1]
+            output1 = output1.strip()
+            output1 = output1.replace("[", "").replace("]", "")
+            output1 = output1.split(",")
+            output1 = [w.strip() for w in output1]
         if "WORD2" in wrd or "NAME2" in wrd:
-            wrd2 = (
+            output2 = (
                 wrd.replace("WORD2:", "")
                 .replace("{{WORD2}}:", "")
                 .replace("NAME2:", "")
                 .replace("{{NAME2}}:", "")
             )
-            wrd3 = wrd2.strip()
-            wrds = wrd3.replace("[", "").replace("]", "")
-            wrds2 = wrds.split(",")
-            wrds2 = [w.strip() for w in wrds2]
+            output2 = output2.strip()
+            output2 = output2.replace("[", "").replace("]", "")
+            output2 = output2.split(",")
+            output2 = [w.strip() for w in output2]
         else:
-            wrds2 = ""
-    return wrds1, wrds2
+            output2 = ""
+    return output1, output2
 
 
 def do_slotting(
@@ -80,15 +81,15 @@ def do_slotting(
     for a in range(len(frame_cols)):
         this_txt = fr_row.loc[0, frame_cols[a]]
         # don't try to string replace on things that aren't strings
-        if isinstance(this_txt, str):
+        if this_txt and isinstance(this_txt, str):
             this_txt = this_txt.replace("{{NAME1}}", this_word)
             this_txt = this_txt.replace("{{NAME2}}", this_word_2)
-            if gs_word is not None:
+            if gs_word:
                 this_txt = this_txt.replace("{{GEN1}}", gs_word)
                 this_txt = this_txt.replace("{{GEN2}}", gs_word2)
                 this_txt = this_txt.replace("{{OCC1}}", gs_word)
                 this_txt = this_txt.replace("{{OCC2}}", gs_word2)
-            if len(lex_div) > 1:
+            if lex_div:
                 this_txt = this_txt.replace("{{WORD1}}", rand_wrd1)
                 this_txt = this_txt.replace("{{WORD2}}", rand_wrd2)
 
@@ -114,7 +115,7 @@ def do_slotting(
             fr_row2.loc[0, frame_cols[a]] = this_txt
     return fr_row2
 
-
+# --- Dict functions ---
 def make_dict(
     nn,
     q_id,

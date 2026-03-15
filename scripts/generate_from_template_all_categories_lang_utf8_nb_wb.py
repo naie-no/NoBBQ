@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import io
 import json
+import csv
 # Utils import (support both repo layouts)
 try:
     from utils import *  # type: ignore
@@ -13,6 +14,53 @@ import ast
 
 import json
 
+def debug_csv_lines(path):
+    last_err = None
+    for enc in ("utf-8-sig", "cp1252"):
+        try:
+            with open(path, "r", encoding=enc, newline="") as f:
+                sample = f.read(4096)
+                f.seek(0)
+                dialect = csv.Sniffer().sniff(sample, delimiters=";\t,")
+                delim = dialect.delimiter
+
+                for lineno, line in enumerate(f, start=1):
+                    try:
+                        next(csv.reader([line], delimiter=delim, quotechar='"'))
+                    except Exception as e:
+                        print(f"\nBroken CSV line {lineno} using {enc}, delimiter={repr(delim)}: {e}")
+                        print(line)
+                        return
+
+                print(f"No obvious CSV quoting issue found using {enc}, delimiter={repr(delim)}")
+                return
+        except Exception as e:
+            last_err = e
+    raise last_err
+
+def read_template_csv(path):
+    last_err = None
+    for enc in ("utf-8-sig", "cp1252"):
+        try:
+            with open(path, "r", encoding=enc, newline="") as f:
+                sample = f.read(4096)
+                f.seek(0)
+                dialect = csv.Sniffer().sniff(sample, delimiters=";\t,")
+                sep = dialect.delimiter
+
+            print(f"Reading {path} with encoding={enc}, sep={repr(sep)}")
+
+            return pd.read_csv(
+                path,
+                na_filter=False,
+                encoding=enc,
+                sep=sep,
+                engine="python"
+            )
+        except Exception as e:
+            last_err = e
+    raise last_err
+                
 def parse_list_cell(val):
     """Parse a cell that should represent a list, e.g. ["F"].
     Accepts Python-literal style, JSON style, and common Excel-escaped variants.
@@ -52,20 +100,19 @@ def parse_kv_lists(cell: str) -> dict:
         return {}
 
     out: dict = {}
-    # Find patterns KEY: [ ... ]
-    for m in re.finditer(r'([A-Za-z0-9_]+)\s*:\s*\[([^\]]*)\]', s):
+
+    for m in re.finditer(r'([^:;\s]+)\s*:\s*\[([^\]]*)\]', s):
         key = m.group(1).strip()
         inner = m.group(2).strip()
 
-        # Try parse as python list
         raw = "[" + inner + "]"
         try:
             vals = ast.literal_eval(raw)
             if not isinstance(vals, list):
                 vals = []
         except Exception:
-            # fallback split on commas
             vals = [v.strip() for v in inner.split(",") if v.strip()]
+
         out[key] = vals
 
     return out
@@ -200,13 +247,8 @@ need_stereotyping_subset = [
 # big loop, does everything
 for cat in cats:
     tpl_path = _pick_csv(f"{cat}_nb")
-    frames = pd.read_csv(
-        tpl_path,
-        na_filter=False,
-        encoding="utf-8-sig",
-        sep=";",          # auto-detect delimiter
-        engine="python"    # required for sep=None
-    )
+    debug_csv_lines(tpl_path)
+    frames = read_template_csv(tpl_path)
 
     dat_file = io.open(DATA_DIR / f"{cat}.jsonl", "w", encoding="utf-8", newline="\n")  # open the file that all the data will be saved in
 
@@ -446,25 +488,37 @@ for cat in cats:
                 # ----------------------------
                 if names_override:
                     repl = {}
-
-                    if "NAME1b" in names_override and j < len(names_override["NAME1b"]):
-                        repl["{{NAME1b}}"] = str(names_override["NAME1b"][j])
-                    if "NAME2b" in names_override and k < len(names_override["NAME2b"]):
-                        repl["{{NAME2b}}"] = str(names_override["NAME2b"][k])
-
-                    if "WORD1b" in names_override and j < len(names_override["WORD1b"]):
-                        repl["{{WORD1b}}"] = str(names_override["WORD1b"][j])
-                    if "WORD2b" in names_override and k < len(names_override["WORD2b"]):
-                        repl["{{WORD2b}}"] = str(names_override["WORD2b"][k])
-
-                    for key in ("POSS", "POSS2", "WORD1", "WORD2"):
-                        if key in names_override and len(names_override[key]) > 0:
-                            val = names_override[key][0] if len(names_override[key]) == 1 else random.choice(names_override[key])
+                
+                    for key, values in names_override.items():
+                        if not values:
+                            continue
+                
+                        # normal direction: slot 1 aligns with j
+                        if key in ("NAME1b", "WORD1b", "KJØNN1", "KJOENN1", "POSS1", "WORD1"):
+                            if j < len(values):
+                                repl[f"{{{{{key}}}}}"] = str(values[j])
+                
+                        # normal direction: slot 2 aligns with k
+                        elif key in ("NAME2b", "WORD2b", "KJØNN2", "KJOENN2", "POSS2", "WORD2"):
+                            if k < len(values):
+                                repl[f"{{{{{key}}}}}"] = str(values[k])
+                
+                        elif key in ("NAME1", "NAME2"):
+                            continue
+                
+                        elif len(values) == len(word_list):
+                            repl[f"{{{{{key}}}}}"] = str(values[j])
+                
+                        elif len(values) == len(new_word_list):
+                            repl[f"{{{{{key}}}}}"] = str(values[k])
+                
+                        else:
+                            val = values[0] if len(values) == 1 else random.choice(values)
                             repl[f"{{{{{key}}}}}"] = str(val)
-
+                
                     if repl:
                         new_frame_row = _replace_slots_in_rowdf(new_frame_row, repl)
-
+        
                 # Apply extra NAME slots (e.g., Norwegian definite forms like {{NAME1b}}/{{NAME2b}})
                 # ONLY if the sheet did not provide NAME1b/NAME2b in Names override
                 if (not names_override) or ("NAME1b" not in names_override and "NAME2b" not in names_override):
@@ -571,23 +625,34 @@ for cat in cats:
                     # NEW: apply overrides in flipped direction (swap indices!)
                     if names_override:
                         repl = {}
-
-                        # because NAME1 is now this_word_2 (index k), NAME2 is now this_word (index j)
-                        if "NAME1b" in names_override and k < len(names_override["NAME1b"]):
-                            repl["{{NAME1b}}"] = str(names_override["NAME1b"][k])
-                        if "NAME2b" in names_override and j < len(names_override["NAME2b"]):
-                            repl["{{NAME2b}}"] = str(names_override["NAME2b"][j])
-
-                        if "WORD1b" in names_override and k < len(names_override["WORD1b"]):
-                            repl["{{WORD1b}}"] = str(names_override["WORD1b"][k])
-                        if "WORD2b" in names_override and j < len(names_override["WORD2b"]):
-                            repl["{{WORD2b}}"] = str(names_override["WORD2b"][j])
-
-                        for key in ("POSS", "POSS2", "WORD1", "WORD2"):
-                            if key in names_override and len(names_override[key]) > 0:
-                                val = names_override[key][0] if len(names_override[key]) == 1 else random.choice(names_override[key])
+                    
+                        for key, values in names_override.items():
+                            if not values:
+                                continue
+                    
+                            # flipped: slot 1 now aligns with k
+                            if key in ("NAME1b", "WORD1b", "KJØNN1", "KJOENN1", "POSS1", "WORD1"):
+                                if k < len(values):
+                                    repl[f"{{{{{key}}}}}"] = str(values[k])
+                    
+                            # flipped: slot 2 now aligns with j
+                            elif key in ("NAME2b", "WORD2b", "KJØNN2", "KJOENN2", "POSS2", "WORD2"):
+                                if j < len(values):
+                                    repl[f"{{{{{key}}}}}"] = str(values[j])
+                    
+                            elif key in ("NAME1", "NAME2"):
+                                continue
+                    
+                            elif len(values) == len(word_list):
+                                repl[f"{{{{{key}}}}}"] = str(values[k])
+                    
+                            elif len(values) == len(new_word_list):
+                                repl[f"{{{{{key}}}}}"] = str(values[j])
+                    
+                            else:
+                                val = values[0] if len(values) == 1 else random.choice(values)
                                 repl[f"{{{{{key}}}}}"] = str(val)
-
+                    
                         if repl:
                             new_frame_row = _replace_slots_in_rowdf(new_frame_row, repl)
 

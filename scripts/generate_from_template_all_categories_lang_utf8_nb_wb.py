@@ -148,13 +148,13 @@ def _pick_csv(stem: str) -> str:
 # all possible values of cat
 cats = [
 #    "Disability_status",
-    "Age",
+#    "Age",
 #    "Physical_appearance",
 #    "SES",
 #    "Gender_identity",
 #    "Race_ethnicity",
 #    "Religion",
-#    "Nationality",
+    "Nationality",
 #    "Sexual_orientation",
 ]
 

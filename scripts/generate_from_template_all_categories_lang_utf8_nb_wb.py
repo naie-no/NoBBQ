@@ -151,10 +151,10 @@ cats = [
 #    "Age",
 #    "Physical_appearance",
 #    "SES",
-#    "Gender_identity",
+    "Gender_identity",
 #    "Race_ethnicity",
 #    "Religion",
-    "Nationality",
+#    "Nationality",
 #    "Sexual_orientation",
 ]
 

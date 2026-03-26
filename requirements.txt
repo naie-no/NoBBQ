@@ -1,2 +1,7 @@
 pandas
 numpy
+jsonlines
+openai
+python-dotenv
+openpyxl
+google-genai

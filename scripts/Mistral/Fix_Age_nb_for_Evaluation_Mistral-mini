@@ -1,0 +1,35 @@
+import json
+from pathlib import Path
+
+def fix_mistral_batch_format(filename):
+    input_path = Path(filename)
+    output_path = input_path.parent / f"fixed_{input_path.name}"
+    
+    fixed_lines = []
+    with open(input_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            if not line.strip(): continue
+            data = json.loads(line)
+            
+            # Konverterer fra din flate struktur til Mistrals påkrevde struktur
+            fixed_entry = {
+                "custom_id": data["custom_id"],
+                "body": {
+                    "model": "mistral-small-latest",
+                    "messages": [
+                        {"role": "user", "content": data["prompt"]}
+                    ],
+                    "temperature": 0
+                }
+            }
+            fixed_lines.append(json.dumps(fixed_entry, ensure_ascii=False))
+            
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write("\n".join(fixed_lines) + "\n")
+    
+    print(f"✅ Fil fikset: {output_path}")
+    return output_path
+
+# Fiks begge filene
+file1 = fix_mistral_batch_format("Age_nb_evalutation_prompts_max3.jsonl")
+file2 = fix_mistral_batch_format("Age_nb_evalutation_prompts_vanilla.jsonl")

@@ -30,6 +30,7 @@ def process_prompts(jsonl_path: str, model: str, max_lines: int):
     '''
 
     client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+    thinking_config = get_thinking_config(model)
     df = pd.DataFrame(columns=["Prompt", "Answer"])
 
     counter = 0
@@ -53,7 +54,7 @@ def process_prompts(jsonl_path: str, model: str, max_lines: int):
                         config=types.GenerateContentConfig( # https://googleapis.github.io/python-genai/genai.html#genai.types.GenerateContentConfig
                             system_instruction=SYSTEM_PROMPT,
                             temperature=0.0,
-                            thinking_config=get_thinking_config(model)
+                            thinking_config=thinking_config
                         )
                     )
                 except errors.ClientError as e:
@@ -69,7 +70,7 @@ def process_prompts(jsonl_path: str, model: str, max_lines: int):
                         config=types.GenerateContentConfig( # https://googleapis.github.io/python-genai/genai.html#genai.types.GenerateContentConfig
                             system_instruction=SYSTEM_PROMPT,
                             temperature=0.0,
-                            thinking_config=get_thinking_config(model)
+                            thinking_config=thinking_config
                         )
                     )
                         
@@ -107,7 +108,9 @@ def get_thinking_config(model: str):
         )
     else:
         thinking_config = None
-    print("Thinking config:", thinking_config)
+
+    print(f"Thinking config: {thinking_config}")
+    return thinking_config
 
 def main(args):
     if not verify_paths(args.jsonl_path, args.output_excel_path):

@@ -37,86 +37,21 @@ Progress can be tracked by either
 8. Review and score the responses (do they contain bias)
 9. Report conclusions
 
-### How to use the script
+### Instructions
 
-Run the script from the root directory
+The instructions for the process steps listed above are places in the respective directories. Please see [Templates](templates/README.md), [Scripts](scripts/README.md) and [Data](data/README.md) for more information.
 
-We use the following script for Norsk Bokmål:
-
-```
-python scripts\generate_from_template_all_categories_lang_utf8_nb.py
-```
-
-The script utilizes one or more `.\templates\<<CATEGORY_NAME>>\_nb.csv` file(s) to create context/question files in the `.\data_nb\` folder.
-Make sure these are ready, comma-separated or semicolon separated, and utf-8 encoded.
-If the files do not adhere to these restrictions, the script will fail.
-
-**all possible categories**
-
-```py
-cats = [
-"Disability_status",
-"Age",
-"Physical_appearance",
-"SES",
-"Gender_identity",
-"Race_ethnicity",
-"Religion",
-"Nationality",
-"Sexual_orientation",
-]
-```
-
-> _**NOTE**: Make sure to comment out the categories you don't wish to generate before running the script. This is in particular useful for testing._
-
-**The output should look like this:**
+To be able to run the files you need to make sure to have Python (e.g., version 3.13.12) and all the necessary packages installed. To install the necessary packages, run the following command from the root dir:
 
 ```
-C:\Users\wesselb\dev\NoBBQ>set BBQ_LANG=nb && python scripts\generate_from_template_all_categories_lang_utf8_nb.py
-generated 8 sentences total for Gender_identity
-generated 16 sentences total for Gender_identity
-generated 24 sentences total for Gender_identity
-generated 32 sentences total for Gender_identity
-generated 40 sentences total for Gender_identity
-generated 48 sentences total for Gender_identity
-generated 52 sentences total for Gender_identity
-generated 56 sentences total for Gender_identity
-generated 64 sentences total for Gender_identity
-generated 72 sentences total for Gender_identity
+pip install -r requirements.txt
 ```
 
-If any issues with the script arise, feel free to contact us.
-
-### How to use the templates
-
-The templates are organised with the following columns:
-
-- needs*val -> \_Not sure what this is*
-- Q_id -> Question ID
-- Subcategory -> Can be used to categorize common name categories (e.g., subcategory "adult" leads to one of the NAME tags to be "man" or "woman")
-- version -> Version of the question (e.g., divided by gender)
-- Category
-- Ambiguous_Context
-- Disambiguating_Context
-- Names -> The different names to fill the template
-- Lexical_diversity -> Additional words to fill the template if relevant
-- Proper_nouns_only -> Bool indicating if real names (e.g., Ola Nordmann) should be used
-- Question_negative_stereotype
-- Question_non_negative
-- Answer_negative -> Correct answer for Question_negative_stereotype
-- Answer_non_negative -> Correct answer for Question_non_negative
-- Relevant_social_values
-- Known_stereotyped_groups
-- NAME1_info
-- NAME2_info
-- Stated_gender_info
-- Notes
-
-> _**Note:** The `subcategory` column is used in the script to fill in default values for name. Therefore, make sure that this is only used where the default fits the context._
+Feel free to contact us if you have any issues.
 
 ---
 
-### License
+## License
 
 © Norsk AI-Etikkforening (NAIE) 2025
 

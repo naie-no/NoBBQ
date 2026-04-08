@@ -1,6 +1,6 @@
 # Generating the dataset
 
-The dataset is created as multiple jsonl files (one per category), based on the [templates](../../templates/README.md). To create the dataset, the script needs to be run per category.
+The dataset is created as multiple jsonl files (one per category), based on the [templates](../../templates/). To create the dataset, the script needs to be run per category.
 
 ## How to use the script
 
@@ -12,9 +12,8 @@ We use the following script for Norsk Bokmål:
 python scripts/template_to_jsonl/generate_from_template_all_categories_lang_utf8_nb.py
 ```
 
-The script utilizes one or more `./templates/<<CATEGORY_NAME>>_nb.csv` file(s) to create context/question files in the `./data/<<CATEGORY_NAME>>` folder.
-Make sure these are ready, comma-separated or semicolon separated, and utf-8 encoded.
-If the files do not adhere to these restrictions, the script will fail.
+The script utilizes one or more `./templates/<<CATEGORY_NAME>>_nb.csv` file(s) to create context/question files in the `./data/<<CATEGORY_NAME>>/1. Data prep` folder.
+Make sure the template .csv files are ready, comma-separated or semicolon separated, and utf-8 encoded. If the .csv files do not adhere to these restrictions, the script will fail.
 
 **all possible categories**
 

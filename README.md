@@ -39,9 +39,9 @@ Progress can be tracked by either
 
 ### Instructions
 
-The instructions for the process steps listed above are places in the respective directories. Please see [Templates](templates/README.md), [Scripts](scripts/README.md) and [Data](data/README.md) for more information.
+The instructions for the process steps listed above are placed in the respective directories. Please see [Templates](templates/), [Scripts](scripts/) and [Data](data/) for more information.
 
-To be able to run the files you need to make sure to have Python (e.g., version 3.13.12) and all the necessary packages installed. To install the necessary packages, run the following command from the root dir:
+To be able to run the files you need to have Python (e.g., version 3.13.12) and all the necessary packages installed. To install the necessary packages, run the following command from the root dir:
 
 ```
 pip install -r requirements.txt

@@ -12,10 +12,10 @@ We use the following script for Norsk Bokmål:
 python scripts/template_to_jsonl/generate_from_template_all_categories_lang_utf8_nb.py
 ```
 
-The script utilizes one or more `./templates/<<CATEGORY_NAME>>_nb.csv` file(s) to create context/question files in the `./data/<<CATEGORY_NAME>>/1. Data prep` folder.
+The script utilizes one or more `./templates/<<CATEGORY_NAME>>_nb.csv` file(s) to create context/question files in the `./data/<<CATEGORY_NAME>>/1. Data prep/` folder.
 Make sure the template .csv files are ready, comma-separated or semicolon separated, and utf-8 encoded. If the .csv files do not adhere to these restrictions, the script will fail.
 
-**all possible categories**
+**All possible categories**
 
 ```py
 cats = [
@@ -32,8 +32,9 @@ cats = [
 ```
 
 > _**NOTE**: Make sure to comment out the categories you don't wish to generate before running the script. This is in particular useful for testing._
+> _**NOTE2**: For now only "Age", "Gender identity", "Religion", and "Nationality" are included in the Norsk Bokmål (NB) dataset_
 
-**The output should look like this (example Gender_identity):**
+**When running the script, you should see the following output in the terminal (example Gender_identity):**
 
 ```
 C:\Users\wesselb\dev\NoBBQ>set python scripts/template_to_jsonl/generate_from_template_all_categories_lang_utf8_nb.py

@@ -6,22 +6,46 @@ def verify_paths(jsonl_file_path: str, output_excel_path: str) -> bool:
     '''
     Verifies that the specified JSONL file path and output Excel file path are valid.
     
-    Checks that the JSONL file exists, the directory for the output Excel file exists, and that the output file has an .xlsx extension.
+    Checks that the JSONL file and the directory for the output Excel file exist, and that the output file has an .xlsx extension.
+    Added corrections if .jsonl or .xlsx enxtensions are missing.
+
+    Input
+    -----
+    jsonl_file_path: str
+        The file path to the input data
+    output_excel_path: str
+        The file path to write the output
+
+    Returns
+    -------
+    A dict containing the jsonl and xlsx paths, who may have been corrected if extension(s) were missing
     '''
+
     exists = True
+
+    # Check input path
     if not os.path.isfile(jsonl_file_path):
-        print(f"JSONL file '{jsonl_file_path}' does not exist.")
-        exists = False
+        if os.path.isfile(jsonl_file_path + ".jsonl"):
+            jsonl_file_path += ".jsonl"
+            print(f"\nMissing file extension for intput JSON file. Adding \'.jsonl\' extension. Current file path: {jsonl_file_path}\n")
+        else:
+            print(f"\nJSONL file '{jsonl_file_path}' does not exist.\n")
+            exists = False
     
+    # Check output path (including dir)
     if not os.path.isdir(os.path.dirname(output_excel_path)):
-        print(f"Directory for output Excel file '{os.path.dirname(output_excel_path)}' does not exist.")
+        print(f"\nDirectory for output Excel file '{os.path.dirname(output_excel_path)}' does not exist.\n")
         exists = False
 
-    if not pathlib.Path(output_excel_path).suffix == ".xlsx":
-        print(f"Output file '{output_excel_path}' does not have an .xlsx extension.")
+    suffix = pathlib.Path(output_excel_path).suffix
+    if not suffix:
+        output_excel_path += ".xlsx"
+        print(f"\nMissing file extension for output Excel file. Adding \'.xlsx\' extension. Current file path: {output_excel_path}\n")
+    elif suffix != ".xlsx":
+        print(f"\nOutput file '{output_excel_path}' should have an \'.xlsx\' extension, not \'{suffix}\'.\n")
         exists = False
     
-    return exists
+    return exists, {"jsonl_path": jsonl_file_path, "output_excel_path": output_excel_path}
 
 def write_df_to_excel(df : pd.DataFrame, output_excel_path : str):
     try:

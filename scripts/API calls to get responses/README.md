@@ -15,7 +15,9 @@ The scripts (one per language model) expect 2 mandatory input params and 2 optio
 - --model $\rightarrow$ Optional param. Which language model version to use. For Gemini the default is set to `gemini-3-flash-preview` and for GPT the default is `gpt-5.4-mini`.
 - --max-lines $\rightarrow$ Optional param. Maximum number of lines to process. If set to `None`, all lines will be processed. Default value is `None`. This param is useful for testing purposes.
 
-In principle, the terminal command is:
+> _**When running the scripts** we ask you to first test with a few lines (e.g., `--max-lines 2`) to verify that it works without issues. The excel files are only written in the end, and it would be unfortunate to realise that there is an issue with this after running 3000 requests to the language model. **Also be aware that overwriting the excel file will fail if the file is open at the time.**_
+
+In principle to run the scripts, the terminal command is:
 
 ```
 python script.py <input_file> <output_dir> [--model MODEL] [--max-lines MAX_LINES]

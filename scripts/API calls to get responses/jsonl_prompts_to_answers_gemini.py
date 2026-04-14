@@ -109,16 +109,17 @@ def get_thinking_config(model: str):
     else:
         thinking_config = None
 
-    print(f"Thinking config: {thinking_config}")
+    print(f"\nThinking config: {thinking_config}\n")
     return thinking_config
 
 def main(args):
-    if not verify_paths(args.jsonl_path, args.output_excel_path):
+    paths_valid, verified_paths = verify_paths(args.jsonl_path, args.output_excel_path)
+    if not paths_valid:
         print("One or more specified paths is incorrect. Please check the paths and try again.")
         return
-
-    df = process_prompts(args.jsonl_path, args.model, args.max_lines)
-    write_df_to_excel(df, args.output_excel_path)
+    
+    df = process_prompts(verified_paths["jsonl_path"], args.model, args.max_lines)
+    write_df_to_excel(df, verified_paths["output_excel_path"])
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

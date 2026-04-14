@@ -72,12 +72,13 @@ def process_prompts(jsonl_path: str, model: str, max_lines: int) -> pd.DataFrame
     return df
 
 def main(args):
-    if not verify_paths(args.jsonl_path, args.output_excel_path):
+    paths_valid, verified_paths = verify_paths(args.jsonl_path, args.output_excel_path)
+    if not paths_valid:
         print("One or more specified paths is incorrect. Please check the paths and try again.")
         return
-
-    df = process_prompts(args.jsonl_path, args.model, args.max_lines)
-    write_df_to_excel(df, args.output_excel_path)
+    
+    df = process_prompts(verified_paths["jsonl_path"], args.model, args.max_lines)
+    write_df_to_excel(df, verified_paths["output_excel_path"])
 
 
 if __name__ == "__main__":

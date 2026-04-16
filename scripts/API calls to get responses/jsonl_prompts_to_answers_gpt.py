@@ -31,6 +31,10 @@ def process_prompts(jsonl_path: str, model: str, max_lines: int) -> pd.DataFrame
 
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     df = pd.DataFrame(columns=["Prompt", "Answer"])
+    
+    # Reasoning is for gpt-5 and o-series models only (see docs)
+    reasoning_setting = {"effort": "none"} if "gpt-5" in model or model.startswith("o") else None
+    print("Reasoning:", reasoning_setting)
 
     counter = 0
     print(f"Starting to read file \'{jsonl_path}\'")
@@ -46,12 +50,13 @@ def process_prompts(jsonl_path: str, model: str, max_lines: int) -> pd.DataFrame
                 prompt = context + " " + question
 
                 print(f"Retrieve response from OpenAI with {model}")
+                # Docs: https://developers.openai.com/api/reference/resources/responses/methods/create
                 response = client.responses.create(
                     model=model,
                     instructions=SYSTEM_PROMPT,
-                    reasoning={"effort": "none"},
+                    reasoning=reasoning_setting,
                     temperature=0.0,
-                    input=prompt
+                    input=prompt     
                 )
                 print("Adding response to dataframe")
                 answer = response.output_text

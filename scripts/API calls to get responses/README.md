@@ -14,6 +14,7 @@ The scripts (one per language model) expect 2 mandatory input params and 2 optio
 - output_excel_path $\rightarrow$ Mandatory param (2nd position). Path for where to save the output Excel file. A new file is automatically created if it doesn't already exist.
 - --model $\rightarrow$ Optional param. Which language model version to use. For Gemini the default is set to `gemini-3-flash-preview` and for GPT the default is `gpt-5.4-mini`.
 - --max-lines $\rightarrow$ Optional param. Maximum number of lines to process. If set to `None`, all lines will be processed. Default value is `None`. This param is useful for testing purposes.
+- --append-from-end (shorthand: -a) $\rightarrow$ Flag, which when used equals to `True` and when not used equals to `False`. If the output excel file already exists, this flag can be used to start running lines from the previous endpoint and append the new responses to the already existing excel file. This is for instance useful if you have first tested with 20 lines and then wish to run the remaining lines without repeating the same requests to the language model.
 
 > _**When running the scripts** we ask you to first test with a few lines (e.g., `--max-lines 2`) to verify that it works without issues. The excel files are only written in the end, and it would be unfortunate to realise that there is an issue with this after running 3000 requests to the language model. **Also be aware that overwriting the excel file will fail if the file is open at the time.**_
 

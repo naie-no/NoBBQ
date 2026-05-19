@@ -16,7 +16,7 @@ DEFAULT_MODEL = "gpt-5.4-mini"
 SYSTEM_PROMPT = "Svar med maks tre setninger."
 MAX_LINES = None  # Set to a number to limit the number of lines processed, or None to process all lines.
 
-def process_prompts(jsonl_path: str, model: str, max_lines: int) -> pd.DataFrame:
+def process_prompts(jsonl_path: str, model: str, max_lines: int, df: pd.DataFrame | None = None) -> pd.DataFrame:
     '''
     Retrieves prompts from a JSONL file, sends them to the OpenAI API, and collects the prompts and responses in a DataFrame.
 
@@ -30,19 +30,28 @@ def process_prompts(jsonl_path: str, model: str, max_lines: int) -> pd.DataFrame
     '''
 
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-    df = pd.DataFrame(columns=["Prompt", "Answer"])
-    
     # Reasoning is for gpt-5 and o-series models only (see docs)
     reasoning_setting = {"effort": "none"} if "gpt-5" in model or model.startswith("o") else None
     print("Reasoning:", reasoning_setting)
+
+    if df is not None:
+        start_line = len(df)
+        print(f"Using {start_line} preexisting lines")
+    else:
+        start_line = 0
+        df = pd.DataFrame(columns=["Prompt", "Answer"])
 
     counter = 0
     print(f"Starting to read file \'{jsonl_path}\'")
     with jsonlines.open(jsonl_path) as jsonl_reader:
         for line in jsonl_reader:
             try:
-                if counter == max_lines:
+                if max_lines and counter == start_line + max_lines:
                     break
+
+                if counter < start_line:
+                    counter += 1
+                    continue
 
                 print(f"Read line {counter}")
                 context = line["context"]
@@ -82,7 +91,15 @@ def main(args):
         print("One or more specified paths is incorrect. Please check the paths and try again.")
         return
     
-    df = process_prompts(verified_paths["jsonl_path"], args.model, args.max_lines)
+    preexisting_df = None
+    if args.append_from_end:
+        if os.path.isfile(verified_paths["output_excel_path"]):
+            print("Appending from end")
+            preexisting_df = pd.read_excel(verified_paths["output_excel_path"])
+        else:
+            print(f"Cannot append from end as output file does not already exist. Output file: {verified_paths["output_excel_path"]}")
+
+    df = process_prompts(verified_paths["jsonl_path"], args.model, args.max_lines, df=preexisting_df)
     write_df_to_excel(df, verified_paths["output_excel_path"])
 
 
@@ -92,6 +109,7 @@ if __name__ == "__main__":
     parser.add_argument("output_excel_path", type=str, help="Path to save the output Excel file")
     parser.add_argument("--model", default=DEFAULT_MODEL, help=f"Model to use (default: {DEFAULT_MODEL})")
     parser.add_argument("--max-lines", type=int, default=MAX_LINES, help=f"Maximum number of lines to process. If 'None', all lines will be processed. (default: {MAX_LINES})")
+    parser.add_argument("-a", "--append-from-end", action="store_true", help="Flag used if you wish to continue to read jsonl lines from the last read line (only possible if \'output_excel_path\' already exists)")
     args = parser.parse_args()
 
     main(args)

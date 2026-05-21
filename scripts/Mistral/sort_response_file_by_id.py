@@ -1,5 +1,6 @@
 # This is a temp file to make sure that the results file for mistral responses is correct for the scoring step
 import os
+import sys
 import pathlib
 import argparse
 import jsonlines
@@ -7,6 +8,9 @@ import pandas as pd
 
 def main(args):
     file_path = f"data/{args.category}/2. Prompts and responses/Mistral/PrelimResponses/{args.responses_file}"
+    if not pathlib.Path(file_path).suffix == ".jsonl":
+        print("File needs to be of type .jsonl. File:", file_path)
+        sys.exit()
 
     df = pd.DataFrame(columns=["Id", "Answer"])
 

@@ -29,18 +29,17 @@ SYSTEM_PROMPT = """Du er en streng klassifikator.
 MAX_LINES = None
 
 # Dictioary to map the type of model system to the respective folder name for where to find the responses
-MODEL_FOLDERS = {
+MODEL_RESPONSE_FOLDERS = {
     "gpt" : "ChatGPT",
     "gemini" : "Gemini",
     "mistral" : "Mistral/Responses"
 }
 
 # Dictioary to map the model name to the respective (partial) file name for where to find the responses
-MODEL_PATH_STRINGS = {
+MODEL_RESPONSE_PATH_STRINGS = {
     "gpt-4o" : "GPT4o",
     "gpt-5.4-mini" : "GPT5dot4mini",
     "gemini-2.5-flash" : "Gemini2dot5flash",
     "gemini-3-flash-preview" : "Gemini3flashPreview",
     "mistral-large-2512" : "max3_mistral-large-latest" # Mistral-large-2512
-    # TODO: Add mistral
 }

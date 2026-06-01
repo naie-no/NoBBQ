@@ -10,11 +10,23 @@ from dotenv import load_dotenv
 import definitions
 load_dotenv()
 
-def process_responses(category_data: pd.DataFrame, responses: dict[str, pd.DataFrame], category: str, model_names: list[str], output_file: str, overwrite: bool, max_lines: int | None = None, preexisting_df: pd.DataFrame | None = None):
+# TODO: Add ID column (and use for finding the correct line in the documents)
+# TODO: add column which gives info on whether it's (dis)ambiguous context and/or if it is (non-)positive question
+
+def process_responses(category_data: pd.DataFrame, responses: dict[str, pd.DataFrame], category: str, model_names: list[str], output_file: str, overwrite_column_specific: bool, append_from_end: bool, max_lines: int | None = None, preexisting_df: pd.DataFrame | None = None):
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
     if preexisting_df is not None:
-        start_line = 0 if overwrite else len(preexisting_df) # TODO: need to add handling for if the last line was not completed before failing
+        # If last row was not completed, remove last row
+        if append_from_end and preexisting_df.iloc[len(preexisting_df) - 1].hasnans:
+            print(f"Removing last row (line {len(preexisting_df) - 1}) as it has NaN values, to prepare for appending")
+            preexisting_df = preexisting_df.iloc[:-1]
+
+        if append_from_end:
+            start_line = len(preexisting_df)
+        else: # if overwrite_column_specific is set to true or if whole file is processed again
+            start_line = 0
+
         processed_responses_df = preexisting_df
     else:
         start_line = 0
@@ -30,9 +42,7 @@ def process_responses(category_data: pd.DataFrame, responses: dict[str, pd.DataF
     try:
         print(f"Processing {n_lines_2_read} lines")
         # from category_data get "question", "ans0", "ans1", "ans2", "label"
-        for i in range(start_line + n_lines_2_read): # TODO: Rather make it start from the end of the df if it already has content (and append from end is on). If append from end is not on, the previous file content must be deleted
-            if i < start_line: # TODO: add better handling of this by rather setting the loop to range from start_line to start_line+n_lines_2_read. Leaving for now to avoid having to veriyf that it works as expected
-                continue
+        for i in range(start_line, start_line + n_lines_2_read):
             
             # TODO: this only works for overwrite if the order of the lines is not changed. Add Id to files and use this instead to process lines
             print(f"Processing line {i}")
@@ -44,7 +54,7 @@ def process_responses(category_data: pd.DataFrame, responses: dict[str, pd.DataF
             ans_opt_2 = data_row["ans2"]
             ground_truth_label = data_row["label"]
 
-            if not overwrite: # don't need to fill data if it's already there
+            if not overwrite_column_specific: # don't need to fill data if it's already there
                 processed_responses_df.loc[i, "Original context"] = context # Saving for easier readability in the results file
                 processed_responses_df.loc[i, "Question"] = question
                 processed_responses_df.loc[i, "ans0"] = ans_opt_0
@@ -59,7 +69,7 @@ def process_responses(category_data: pd.DataFrame, responses: dict[str, pd.DataF
                 model_answer = model_answer.replace('\n', '').replace('\r', '') # removing arbitrary line breaks in model response
 
                 print(f"Categorizing {model_name} answer for line {i}")
-                prompt = f"Gitt spørsmålet `{question}` og svaret `{model_answer}`. Hvilket av følgende svaralternativ passer best til svaret? ans0: {ans_opt_0}; ans1: {ans_opt_1}; ans2: {ans_opt_2}."
+                prompt = f"Gitt spørsmålet `{question}` og svaret `{model_answer}`. Hvilket av følgende svaralternativ passer best til svaret? ans0: '{ans_opt_0}'; ans1: '{ans_opt_1}'; ans2: '{ans_opt_2}'."
 
                 # Classify response
                 classification_response = client.responses.create(
@@ -69,16 +79,11 @@ def process_responses(category_data: pd.DataFrame, responses: dict[str, pd.DataF
                     )
                 classified_answer = classification_response.output_text
 
-                if overwrite:
+                if overwrite_column_specific:
                     print(f"Overwriting line {i} for model {model_name}")
 
                 processed_responses_df.loc[i, f"{model_name} answer"] = model_answer
                 processed_responses_df.loc[i, f"Classified {model_name} answer"] = classified_answer
-
-                #print(f"Line {i} model {model_name} - Classified response: {classified_answer} - Original response: {model_answer}")
-
-            # Write to csv
-            #processed_responses_df.to_csv(output_file, mode='a', index=False, header=i==0) # TODO: remember to update header bool if basing loop on length of existing df
 
     except IndexError as ie:
         print(f"Index error at line {i}:\n{ie}")
@@ -99,15 +104,16 @@ def process_responses(category_data: pd.DataFrame, responses: dict[str, pd.DataF
             processed_responses_df.to_excel(output_file, index=False)
         else:
             print(f"Unhandled suffix '{suffix}' detected, changing to .xlsx suffix")
-            output_file = pathlib.Path(output_file).stem + ".xlsx"
+            output_file = pathlib.Path(output_file).stem + ".xlsx" # TODO: this is not working as expected! path of file is gone
                 
         print(f"Wrote {len(processed_responses_df)} lines to file {output_file}")
     except Exception as e:
         print(f"Failed to write to Excel file: {e}")
     
 
-def load_responses(category: str, models: list[str]) -> dict[str, pd.DataFrame]:
+def load_model_responses(category: str, models: list[str]) -> dict[str, pd.DataFrame]:
     category_responses_dir = f"data/{category.lower()}/2. Prompts and responses"
+    print("Loading models:", models)
     
     responses = {}
     for model in models:
@@ -138,7 +144,7 @@ def load_responses(category: str, models: list[str]) -> dict[str, pd.DataFrame]:
                     elif suffix == ".jsonl" or suffix == ".json":
                         continue
                     else:
-                        print(f"NotImplementedError: Handling of suffix {suffix} is not implemented in {load_responses.__name__}")
+                        print(f"NotImplementedError: Handling of suffix {suffix} is not implemented in {load_model_responses.__name__}")
                         sys.exit()
                 except PermissionError:
                     print(f"\nPermissionError: The file you're trying to load is open and can therefore not be processed. Please close all relevant responses files. File: '{file}'")
@@ -151,7 +157,7 @@ def load_responses(category: str, models: list[str]) -> dict[str, pd.DataFrame]:
             print(f"No matching file found for model '{model}' in {model_responses_dir}")
             sys.exit()
 
-        responses[model_lower] = df
+        responses[model_lower] = df.fillna("") # Replacing any NaN values with empty string. This avoids the script failing during processing
     return responses
 
 def load_data_for_category(category: str) -> pd.DataFrame:
@@ -196,13 +202,13 @@ def verify_data_frames(category_data: pd.DataFrame, responses: dict[str, pd.Data
             print("Error: DataFrame lenghts not matching. Please ensure that all files to process have the same number of rows.")
             sys.exit()
 
-def main(args):
+def main(args): # TODO: need to add handling that verifies that all args are correct (parser just assumes that the last arg is the output_file)
     # getting output file path
     output_folder = f"data/{args.category.lower()}/3. Automated scoring"
     if not os.path.isdir(output_folder):
         print("Creating output folder")
         os.makedirs(output_folder, exist_ok=True)
-    output_file_path = f"{output_folder}/{args.category}_{args.output_file_name}"
+    output_file_path = f"{output_folder}/{args.category.replace(" ", "_")}_{args.output_file_name}"
 
     # Loading output file if it has content. Only necessary if the append-from-end flagg is used
     preexisting_df = None
@@ -230,10 +236,10 @@ def main(args):
     # Load and process category and model data
     # TODO: add handling of start_line to avoid loading data to memory which is not needed
     category_data = load_data_for_category(args.category)
-    responses = load_responses(args.category, args.models)
+    responses = load_model_responses(args.category, args.models)
     verify_data_frames(category_data, responses)
     
-    process_responses(category_data, responses, args.category, args.models, output_file_path, args.overwrite, args.max_lines, preexisting_df)
+    process_responses(category_data, responses, args.category, args.models, output_file_path, args.overwrite, args.append_from_end, args.max_lines, preexisting_df)
     
 
 if __name__ == "__main__":

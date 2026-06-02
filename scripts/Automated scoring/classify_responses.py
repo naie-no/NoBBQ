@@ -13,21 +13,26 @@ load_dotenv()
 # TODO: Add ID column (and use for finding the correct line in the documents)
 # TODO: add column which gives info on whether it's (dis)ambiguous context and/or if it is (non-)positive question
 
-def process_responses(category_data: pd.DataFrame, responses: dict[str, pd.DataFrame], category: str, model_names: list[str], output_file: str, overwrite_column_specific: bool, append_from_end: bool, max_lines: int | None = None, preexisting_df: pd.DataFrame | None = None):
+def process_responses(category_data: pd.DataFrame, responses: dict[str, pd.DataFrame], category: str, model_names: list[str], output_file: str, overwrite_or_add_column: bool, append_from_end: bool, max_lines: int | None = None, preexisting_df: pd.DataFrame | None = None):
     client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-    if preexisting_df is not None:
-        # If last row was not completed, remove last row
-        if append_from_end and preexisting_df.iloc[len(preexisting_df) - 1].hasnans:
-            print(f"Removing last row (line {len(preexisting_df) - 1}) as it has NaN values, to prepare for appending")
-            preexisting_df = preexisting_df.iloc[:-1]
+    if preexisting_df is not None and (append_from_end or overwrite_or_add_column):
+        if append_from_end and overwrite_or_add_column:
+            print("ArgumentException: The script is not able to both overwrite and append when processing responses.")
+            sys.exit()
 
+        # If last row was not completed, remove last row
         if append_from_end:
+            if preexisting_df.iloc[len(preexisting_df) - 1].hasnans:
+                print(f"Removing last row (line {len(preexisting_df) - 1}) as it has NaN values, to prepare for appending")
+                preexisting_df = preexisting_df.iloc[:-1]
             start_line = len(preexisting_df)
-        else: # if overwrite_column_specific is set to true or if whole file is processed again
+            
+        if overwrite_or_add_column:
             start_line = 0
 
         processed_responses_df = preexisting_df
+
     else:
         start_line = 0
         model_column_names = [
@@ -54,7 +59,7 @@ def process_responses(category_data: pd.DataFrame, responses: dict[str, pd.DataF
             ans_opt_2 = data_row["ans2"]
             ground_truth_label = data_row["label"]
 
-            if not overwrite_column_specific: # don't need to fill data if it's already there
+            if not overwrite_or_add_column: # don't need to fill data if it's already there
                 processed_responses_df.loc[i, "Original context"] = context # Saving for easier readability in the results file
                 processed_responses_df.loc[i, "Question"] = question
                 processed_responses_df.loc[i, "ans0"] = ans_opt_0
@@ -79,7 +84,7 @@ def process_responses(category_data: pd.DataFrame, responses: dict[str, pd.DataF
                     )
                 classified_answer = classification_response.output_text
 
-                if overwrite_column_specific:
+                if overwrite_or_add_column:
                     print(f"Overwriting line {i} for model {model_name}")
 
                 processed_responses_df.loc[i, f"{model_name} answer"] = model_answer
@@ -249,7 +254,7 @@ if __name__ == "__main__":
     parser.add_argument("output_file_name", type=str, help="File name for where to save the output file (.csv og .xlsx")
     parser.add_argument("--max-lines", type=int, default=definitions.MAX_LINES, help=f"Maximum number of lines to process per results file. If 'None', all lines will be processed. (default: {definitions.MAX_LINES})")
     parser.add_argument("-a", "--append-from-end", action="store_true", help="Flag used if you wish to continue to read lines from the last read line (only possible if file with \'output_file_name\' already exists)")
-    parser.add_argument("-o", "--overwrite", action="store_true", help="Flag used if you wish to overwrite data for category and model(s) (only possible if file with \'output_file_name\' already exists)")
+    parser.add_argument("-o", "--overwrite-or-add", action="store_true", help="Flag used if you wish to overwrite or add data for specific model column(s) (only possible if file with \'output_file_name\' already exists)")
     args = parser.parse_args()
 
     main(args)

@@ -1,0 +1,204 @@
+2240c0b44cda4a95f37ace4f7c0e446b9ead94c7|2026-05-19 12:39:18 +0200|wesselb|wessel.braakman@statnett.no|XLSX files responses Gender Identity and Nationality, MISTRAL LARGE LATEST
+be376598e342718fdaec6716584688cfd63de183|2026-05-19 12:33:25 +0200|wesselb|wessel.braakman@statnett.no|Religion XLS mistral
+53673d04ac223064477e41a4959a197ca538e91a|2026-05-19 12:23:29 +0200|wesselb|wessel.braakman@statnett.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+09706395aa1e8ec15eccdb4543f9075c806a4f16|2026-05-19 12:23:12 +0200|wesselb|wessel.braakman@statnett.no|xlsx AGE Mistral
+3a345cb7dceedebc515ff5e367bd695c1f83a8db|2026-05-11 11:58:53 +0200|isabel.burgos|isabel.burgos@bouvet.no|Added python notebook which visualises the results of the categorised responses
+d28347e88ad9b85015d4fa53836c45bbc56f6db6|2026-05-07 15:06:02 +0200|isabel.burgos|isabel.burgos@bouvet.no|Retrieved responses from GPT-4o
+2fcc8c20e0f7a8fe4258c277d7bde54c8e807498|2026-05-07 13:28:57 +0200|isabel.burgos|isabel.burgos@bouvet.no|Added flag and functionality so the script starts sending requests from end of doc if content already exists
+6c76973de16f178d8c0235bac8ffaccd3fd978c8|2026-05-07 13:26:50 +0200|isabel.burgos|isabel.burgos@bouvet.no|Retrieved responses from GPT-4o
+f6b6c5ba95602ce96296e78fa2cf90b17db9f6df|2026-05-07 11:52:10 +0200|isabel.burgos|isabel.burgos@bouvet.no|Ran final prompts for Age
+29b7218528b0c54816adee7806755ad4f235914a|2026-05-05 11:04:03 +0200|wesselb|wessel.braakman@statnett.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+c537dab4a38bf7189f140b9a7a425abd5902a13d|2026-04-27 09:58:52 +0200|isabel.burgos|isabel.burgos@bouvet.no|Responses from gemini-2.5-flash
+9de8c8dd404a11f0971dc904b7a50677f4f75270|2026-04-20 14:07:27 +0200|isabel.burgos|isabel.burgos@bouvet.no|Moving responses to model specific folders
+6a13955d2e32de6151e4657ba785d6768a41a18a|2026-04-20 14:06:37 +0200|isabel.burgos|isabel.burgos@bouvet.no|Was run on wrong data. Deleting for cleanliness
+508948221bb28cb18004a9a7c02b29ff1aa23807|2026-04-17 14:45:02 +0200|isabel.burgos|isabel.burgos@bouvet.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+aadb2ec5ba5cb148a3810ddd5130ec37cc0b34bc|2026-04-17 14:44:49 +0200|isabel.burgos|isabel.burgos@bouvet.no|Responses for Age from Gemini-2.5-flash
+746baf0e8d0ed5173a466f562a0406bd40c81c79|2026-04-16 16:09:07 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+d61abece8f34b9f967c3a2cb9af3a637050cce89|2026-04-16 16:09:01 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Mistral prompts batches responses age nationality gender identity
+663bc047544441199bf4cea7c69cc06b0d5b0232|2026-04-16 14:26:49 +0200|isabel.burgos|isabel.burgos@bouvet.no|Completed requests for Gemini with Age dataset
+2f092110553f5679c564de4f373a750d838ae63e|2026-04-16 14:08:19 +0200|isabel.burgos|isabel.burgos@bouvet.no|Retrieved responses for religion
+6a39a984aff2dadc19c0d5ec34beb25bfce6aeb7|2026-04-16 14:07:42 +0200|isabel.burgos|isabel.burgos@bouvet.no|Allowing for non-reasoning models by setting reasoning=None when necessary
+5440a4fc7a35b397e11dbd973fb8e94b2d5c7dd1|2026-04-16 10:56:28 +0200|isabel.burgos|isabel.burgos@bouvet.no|Removed duplicates (same context and question) from dataset
+971ec9416464104e8e81c285ea5ac3e2d2b4c3fe|2026-04-14 12:57:51 +0200|wesselb|wessel.braakman@statnett.no|jsonl gender file with dupes
+c669f6b8f2ccd62aca7029d0c2453749824b9f00|2026-04-14 12:40:45 +0200|isabel.burgos|isabel.burgos@bouvet.no|Added missing subcategory for rows without subcat, name and proper_noun
+11de76f53658cddee08eb22785cb6b0270a1b1bd|2026-04-14 07:22:43 +0200|wesselb|wessel.braakman@statnett.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+db5c69bc2524b7ef3841f760e0416185b42ac0b0|2026-04-14 07:22:37 +0200|wesselb|wessel.braakman@statnett.no|Gender_identity.jsonl fixed
+bbcc44c6495a905081a4c20c29e3dd0f66d87c4d|2026-04-13 15:41:42 +0200|isabel.burgos|isabel.burgos@bouvet.no|Repsonses religion (GPT and GEMINI)
+213192b3e56cbe7a43ccdb2ef68b6ec9ee761d55|2026-04-13 11:58:27 +0200|isabel.burgos|isabel.burgos@bouvet.no|Added handling of missing file extensions
+7d6d2562a8ccacf88406c5f2559858a4d5ce4453|2026-04-13 11:11:28 +0200|isabel.burgos|isabel.burgos@bouvet.no|Added important remarks for running the scripts
+69a33d1c6568e94ab913f721b8f5ddbcec724d5f|2026-04-13 11:11:01 +0200|isabel.burgos|isabel.burgos@bouvet.no|Added handling of missing file extensions
+8e3e3eff2c40e4c355aeb126af6a54751e27519b|2026-04-13 10:00:22 +0200|wesselb|wessel.braakman@statnett.no|update gender identity jsonl
+43c21d64e00237798a98435a8c67bcc0bac712f7|2026-04-10 17:33:05 +0200|wesselb|wessel.braakman@statnett.no|Updated gender_identity jsonl again
+4c99ef23eb91fe69418d903ee9bfbad753fae67a|2026-04-10 17:01:28 +0200|wesselb|wessel.braakman@statnett.no|updated gender identity after running with generic script
+0544190926418d0faa303286ef4df41fb91a4757|2026-04-09 12:39:36 +0200|wesselb|wessel.braakman@statnett.no|religion updated
+a208816f29c4bb7e8191110b76c3efdbb3a9e119|2026-04-09 12:30:09 +0200|isabel.burgos|isabel.burgos@bouvet.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+824d77c868817c021454c2b9cdda4d64257981d3|2026-04-09 12:29:45 +0200|isabel.burgos|isabel.burgos@bouvet.no|Added the adjektive of the religions as "bestemt form" for the datapoints in the Religion Category
+4bbb6e62286a9ce97547613b34bf3885fef61005|2026-04-09 12:27:11 +0200|wesselb|wessel.braakman@statnett.no|religion json
+43f69013f3f6edabb280a38b4f2e3352be2a2975|2026-04-09 11:56:23 +0200|wesselb|wessel.braakman@statnett.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+1e68c8a9acf1afc8b4a5ce89a244de2da73832c4|2026-04-09 11:56:04 +0200|wesselb|wessel.braakman@statnett.no|Religion json
+06d89c450d2d5ecd981ad6ea1cfb964f3be74973|2026-04-08 16:51:34 +0200|isabel.burgos|isabel.burgos@bouvet.no|README corrections
+5e8f5d2ba4556300880a15ffd4b4ec71df9bbfdd|2026-04-08 14:30:57 +0200|isabel.burgos|isabel.burgos@bouvet.no|Minor update
+8e7fb69a086e59cc2fd841746613d581d533428f|2026-04-08 14:26:29 +0200|isabel.burgos|isabel.burgos@bouvet.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+06244631635013433d5b11bec7406eaf2f6aff97|2026-04-08 14:25:58 +0200|isabel.burgos|isabel.burgos@bouvet.no|Update on README files in preparation for expanding the team
+d3b0f9042fafda2b68dd452a3655def0f3574574|2026-03-31 13:05:10 +0200|Wessel Braakman|wessel.braakman@bouvet.no|changes from PC
+0d8236b6aaf9e14fc5831a481db829cea3015d4d|2026-03-31 12:03:46 +0200|wesselb|wessel.braakman@statnett.no|Restrukturering av repoen
+51799c3355c16e5e7087c719891c2f2bc11e577a|2026-03-30 14:25:59 +0200|isabel.burgos|isabel.burgos@bouvet.no|Reviewed religion - Ready for processing
+385491773a2a0184a640d36523f5715bc9eb353b|2026-03-27 14:23:19 +0100|wesselb|wessel.braakman@statnett.no|re-ran nationality after changes IB
+be6cf2e122a11101995d2b94d98ba16149b9fe91|2026-03-27 14:21:53 +0100|wesselb|wessel.braakman@statnett.no|re-ran nationality after changes IB
+16346bdd8ed1529d6b6d8f95d78e9dd876c91b30|2026-03-27 14:19:37 +0100|wesselb|wessel.braakman@statnett.no|religion after review
+a14d251b16a5f7d9d80eab675af774ba0418dfed|2026-03-27 14:14:38 +0100|isabel.burgos|isabel.burgos@bouvet.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+2f539892a241c119ebf7804ad39e73101077ee8e|2026-03-27 14:14:20 +0100|isabel.burgos|isabel.burgos@bouvet.no|Fixed bug
+50f4ff263a69ad703926189c920fdce2dab67ebd|2026-03-27 14:13:56 +0100|isabel.burgos|isabel.burgos@bouvet.no|Fixed translation Nationality - Ready for processing
+35564b6404a04621a2df78242ac7129bab999b23|2026-03-27 11:41:03 +0100|wesselb|wessel.braakman@statnett.no|forgot excel file for mistral evaluation via chatgpt 2.5
+96ffb2ac708849b9fc3251b1b33668790e7eac81|2026-03-26 15:49:54 +0100|isabel.burgos|isabel.burgos@bouvet.no|Added remarks to compare preliminary results for discussion
+53ffadb9565e5fb012224464e17e07687ee50b8c|2026-03-26 15:11:33 +0100|isabel.burgos|isabel.burgos@bouvet.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+995b36f7dddabae39d65ede49e4ede8ab2b9ec69|2026-03-26 15:11:17 +0100|isabel.burgos|isabel.burgos@bouvet.no|Update
+998068a1828efce9c3ccc6432f78dab298a3cf6e|2026-03-26 15:11:00 +0100|isabel.burgos|isabel.burgos@bouvet.no|Added necessary libraries for running the new gpt and gemeni scripts
+485aef52d7863eeac1d3ab66769169156e1f2eac|2026-03-26 15:10:24 +0100|isabel.burgos|isabel.burgos@bouvet.no|Created script to pass prompts from jsonl file to gemini model
+4ac76fa4b072845b28335c5f0ecc4343ee6ca14b|2026-03-26 15:07:36 +0100|isabel.burgos|isabel.burgos@bouvet.no|Improve modularity and added docs
+36dad632dea952f3a0dc4f07f48dc65688d168c4|2026-03-26 14:43:43 +0100|isabel.burgos|isabel.burgos@bouvet.no|Incomplete retrieval of responses from Gemini-3-flash-preview for Age
+3f35c18567b868acf713ed68144923d7bd6b026b|2026-03-26 14:42:13 +0100|isabel.burgos|isabel.burgos@bouvet.no|Marked specific findings relevant for discussion of results
+933197527062f9491d79c630d221f533c95e3864|2026-03-26 14:41:19 +0100|isabel.burgos|isabel.burgos@bouvet.no|Responses from GPT-5.4-mini for Gender Identity
+67303ae7b06ad543f7d3d6c29190e23e3ca3e5ff|2026-03-26 11:30:29 +0100|Wessel Braakman|wessel.braakman@bouvet.no|Merge branch 'main' of https://github.com/WesselBraakman/NoBBQ
+efb0d3dd737c0a661e777940e830d6e9e0c126d3|2026-03-26 11:30:26 +0100|Wessel Braakman|wessel.braakman@bouvet.no|Mistral batch jobs
+2e6e54c417845a19b4f632865694fb2d476556af|2026-03-25 14:59:39 +0100|isabel.burgos|isabel.burgos@bouvet.no|Retrieved answers from gpt-5.4-mini
+e9df09930908ca6896393644cf1e5b8c1408b983|2026-03-25 14:58:09 +0100|isabel.burgos|isabel.burgos@bouvet.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+217ce5de6a6fea76a7ba9db9e062de9c9e033f10|2026-03-25 14:57:43 +0100|isabel.burgos|isabel.burgos@bouvet.no|Created script to pass prompts from jsonl file to gpt model
+2b01efac1f5398459ee11d182bd91959acae06e6|2026-03-24 13:27:09 +0100|wesselb|wessel.braakman@statnett.no|evaluations for Age_nb using mistral-small-latest
+d311a5bf2883e68e0a71f1c8372e0116eb7e3be3|2026-03-24 12:39:21 +0100|wesselb|wessel.braakman@statnett.no|Scripts and files for Age_nb
+da7d34529c32010cc9d1bb84a6faf40f83965aeb|2026-03-24 09:22:32 +0100|wesselb|wessel.braakman@statnett.no|Added batch jobs for Mistral using restrictions
+30ced1818a6dfd837e683a16da561374117f1b92|2026-03-23 12:23:41 +0100|wesselb|wessel.braakman@statnett.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+43de4823635c5d354a6458d89f13fbab0a302285|2026-03-23 12:23:28 +0100|wesselb|wessel.braakman@statnett.no|Script and test batch for mistral - will send from private pc
+a26abbe1eed6941089914a2d2db4f15918f3385c|2026-03-02 13:19:15 +0100|isabel.burgos|isabel.burgos@bouvet.no|Added requirements needed
+a438a98f470e99b0507aa006d01b4ce6ca5cdb22|2026-03-20 20:19:36 +0100|wesselb|wessel.braakman@statnett.no|cleaned up a little since my last commit was mostly aimed at mistral batch processing
+5b4a4ff495f852887558141a04dd7a874598217a|2026-03-20 20:16:24 +0100|wesselb|wessel.braakman@statnett.no|Prompt files for Age, Gender identity and Nationality. Mistral BATCH jsonl file for Age, Gender identity and Nationality
+d3eaede2bbe3bf29f007a15885e232bcd3c3116b|2026-03-16 12:55:38 +0100|wesselb|wessel.braakman@statnett.no|Gender identity bra nok
+8378077efb0ccf88b96eb3e91ed1cd8e95260cda|2026-03-16 08:37:29 +0100|wesselb|wessel.braakman@statnett.no|Nationality_nb.jsonl also ready
+105ea8d823a733f9baf85641f2afef5435d9abb1|2026-03-15 19:57:52 +0100|wesselb|wessel.braakman@statnett.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+2a7a883b62f79d93f2911398f5e2a347fdc1ff8f|2026-03-15 19:57:33 +0100|wesselb|wessel.braakman@statnett.no|Age_nb.jsonl should now be GOOD ENOUGH!
+7ce1d9f692de6757ab15a86016ba3d52084495db|2026-03-09 12:24:11 +0100|isabel.burgos|isabel.burgos@bouvet.no|Adding example where proper_noun=TRUE.
+655f7e25e502aabdbc58d957f94a22f9245efb32|2026-03-05 14:28:02 +0100|isabel.burgos|isabel.burgos@bouvet.no|Updates based on feedback at meeting 05.03.26
+3f7b6e51207c2b0bc942d4910687763c0b69a3c7|2026-03-09 14:22:12 +0100|isabel.burgos|isabel.burgos@bouvet.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+b3172b2bfbbf3b4d45f4e10a35d8ff9e692e76c3|2026-03-03 14:16:18 +0100|isabel.burgos|isabel.burgos@bouvet.no|Added .gitignore file
+c4c50a497097f12050cf4c950cea18a9565f3554|2026-03-09 14:09:23 +0100|isabel.burgos|isabel.burgos@bouvet.no|Result from current template
+b88bd35aea0d042726699672dfb0ef3cb4690fe5|2026-03-09 14:07:38 +0100|isabel.burgos|isabel.burgos@bouvet.no|Improvements and refactoring
+a66d829bf43c37920fde3cfc19c94ada0ce3a29f|2026-03-09 12:24:11 +0100|isabel.burgos|isabel.burgos@bouvet.no|Adding example where proper_noun=TRUE.
+e91b9cb11ec293b6a678cde7042233e99f098def|2026-03-05 14:28:02 +0100|isabel.burgos|isabel.burgos@bouvet.no|Updates based on feedback at meeting 05.03.26
+bcbab9bf3565e204d3b1cda752c3da0533ed2668|2026-03-05 13:01:32 +0100|wesselb|wessel.braakman@statnett.no|script wb
+4042141ac180957fadd5babe3f8af8c7cc389365|2026-03-05 12:59:45 +0100|wesselb|wessel.braakman@statnett.no|changes age
+c09f7c1f4062d1627ac3e1f6fdef7e921853c880|2026-03-05 08:26:42 +0100|wesselb|wessel.braakman@statnett.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+23d807be2aec6bb4c87d9f1aaa281daaecae10d4|2026-03-05 08:26:11 +0100|wesselb|wessel.braakman@statnett.no|age klar til review
+ca5938b7d6109f39c4727055b1e89f8dc89d6372|2026-03-04 11:44:44 +0100|isabel.burgos|isabel.burgos@bouvet.no|Including update to vocabulary for current gender_identity template
+941ba73942286ace0945a0ac1ed375cf94e355a0|2026-03-04 10:25:12 +0100|isabel.burgos|isabel.burgos@bouvet.no|Saving the template that I use during development of this branch
+15cc6ce3bcd5ddfff8edcc26b7bee7d2f40ab481|2026-03-03 16:22:56 +0100|isabel.burgos|isabel.burgos@bouvet.no|Updating Gender_identity_nb
+99a82621dc11d8c51a521d83e9b58985efbd3ebd|2026-03-03 16:13:12 +0100|isabel.burgos|isabel.burgos@bouvet.no|Remove possible bug
+a41820d89e7b191e53c0e311146e7da3ea190828|2026-03-03 14:17:54 +0100|isabel.burgos|isabel.burgos@bouvet.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+e0f0ecaa9761bbc20cc355f7195b747e6a95a8b7|2026-03-03 14:17:15 +0100|isabel.burgos|isabel.burgos@bouvet.no|Update snippet for gender identity data
+7e4436714a6851240c23b7f21eaa6d24104f1ce7|2026-03-03 14:16:18 +0100|isabel.burgos|isabel.burgos@bouvet.no|Added .gitignore file
+84d6f503a08c2781038948872085d05c1cf7270d|2026-03-03 14:15:02 +0100|isabel.burgos|isabel.burgos@bouvet.no|Futher cleanups and adding TODOs
+5a66ef574ade54842d2905274e0eebbbf2918ec5|2026-03-03 14:11:53 +0100|wesselb|wessel.braakman@statnett.no|Merge branch 'main' of https://github.com/naie-no/NoBBQ
+5d502d9240b21b0a1471098f3909d63a37c1f663|2026-03-03 14:11:24 +0100|wesselb|wessel.braakman@statnett.no|add script _wb
+ff4d19e9f90705e6ba3f8365e8560c58d6181d04|2026-03-02 14:46:13 +0100|isabel.burgos|isabel.burgos@bouvet.no|Improvements and adding more descriptions
+11e7d8ec960cd8f5df77f064d9e2ab3c633204eb|2026-03-02 13:31:27 +0100|isabel.burgos|isabel.burgos@bouvet.no|Further refactoring
+f1e387290a42ee57042ea6852cd8eb99a9a0ad90|2026-03-02 13:21:17 +0100|isabel.burgos|isabel.burgos@bouvet.no|Start refactoring script
+2b49f2b853cef1382e4f04a010cb5f4e57960e7a|2026-03-02 13:19:15 +0100|isabel.burgos|isabel.burgos@bouvet.no|Added requirements needed
+7dbcb8fd015b1249b84ec2499ff2b476e36692e3|2026-02-20 11:35:38 +0100|wesselb|wessel.braakman@statnett.no|Merge branch 'main' of https://github.com/WesselBraakman/NoBBQ
+21684fc397e9ed964479576bc2def6315069145e|2026-02-20 11:35:32 +0100|wesselb|wessel.braakman@statnett.no|Updated script, vocabulary_nb for nationality, got 1st iteration of nationality translated
+bb1380328ce00637f9544591bb17c5e08c50342b|2026-02-19 15:37:51 +0100|isabel.burgos|isabel.burgos@bouvet.no|Started reviewing Gender Identity template
+b0fce5c2cbac814e54b999b7dbc4be8182787349|2026-02-17 12:52:38 +0100|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+d78ba3880edc2fdb7d1de2bc92b488f267585fcf|2026-02-17 12:51:07 +0100|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+ed52c1ae0ab95af3efd4d7a38f8b63cc419f1cbc|2026-02-17 12:50:11 +0100|wesselb|wessel.braakman@statnett.no|Added possibility for -bestemt- version of variables, also cleaned up git repo by removing old test scripts and files
+1cd87741f4e51a0a5fc45205e80968e7f10e8b03|2026-02-13 11:27:42 +0100|wesselb|wessel.braakman@statnett.no|Added translation review file for Nationality
+d20f5a1fc72f44f0a36ce361a370836f523d4c78|2026-02-12 11:40:03 +0100|wesselb|wessel.braakman@statnett.no|Added translation progress for templates. Files called <CATEGORY>_nb_READY_FOR_REVIEW.xlsx contain 3 tabs; norwegian, english (original) and a comparison tab for quick validation
+6f4c0b84fb8f2326fc3846cacf4d73b0c6d19001|2026-01-14 14:36:01 +0100|wesselb|wessel.braakman@statnett.no|Added scripts for generating Norwegian prompts from Norwegian templates
+f999d42c03ca2eeb0b9475de244fb950641e108f|2025-11-12 14:57:22 +0100|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+4a6f3cf4507af7267302b0295e98fd88175726e0|2025-09-10 14:59:41 +0200|wesselb|wessel.braakman@statnett.no|updated folder structure to make it more logical and chronological
+0f34d8d7f66e125ece0bc0db9047c719bbd0bbc2|2025-09-09 12:19:09 +0200|Wessel Braakman|wessel.braakman@bouvet.no|automated scoring for gender identity gemini
+990cab2eff0cec22f26686d19da8407a15be61f7|2025-09-09 12:15:30 +0200|wesselb|wessel.braakman@statnett.no|Finally all answers for Gender Identity, from Gemini2.5Flash GUI
+8e9f9ae56c786925b55a7972e3ad4b4d2d1c2f4a|2025-09-02 12:14:32 +0200|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+0b3cbb37b634f66f58433b595966b9b7f3920c61|2025-09-02 12:13:33 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Merge branch 'main' of https://github.com/WesselBraakman/NoBBQ
+f6696a27aa279ff77005b2c12988d3d1d39606ca|2025-09-02 12:12:49 +0200|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+783d199f12e0fa78f7d49b5704a4d8a54fdcf02d|2025-09-02 12:12:06 +0200|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+5b726c3dd366684af39f517a8e3550ea4dc563d2|2025-09-02 12:11:44 +0200|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+d894b631d9ce89483c65ff3da19f8241ee1059a7|2025-09-02 11:43:16 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Added initial commit for analysis of scores (Alejandra)
+88df3429d451b770757779fc1824e529422559e6|2025-09-02 11:39:36 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Added automatic scoring for Gemini for all categories
+0cb07f7f329144ea1aa9a7b5eebcd4574f4c7698|2025-09-02 10:28:03 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Automated scoring GPT4o and Preplexity for all categories
+fdf5b88aaf370ad4f3dd0586292e76cd5b2aa606|2025-08-28 12:56:13 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Merge branch 'main' of https://github.com/WesselBraakman/NoBBQ
+7b992aed3f055afe50a5ae299bfd98b4a2ead909|2025-08-28 12:56:05 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Added some tools for using API (openai and gemini) and for running against local ollama (normistral-it7b). Also used api tools to do some test runs against gemini/openai with our prompts, but in English (before translation) to see if that makes a different in its understanding
+ef6e86d94a0c26f9586260439d6766a08e1dd615|2025-08-28 12:25:32 +0200|wesselb|wessel.braakman@statnett.no|Gemini responses for religion, manually, first 49
+3bd69d9ab798e698c4060c773efd0af5e7afde6b|2025-08-27 14:54:28 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Updated religion with first 49 responses from Gemini
+088c706c2a43de1f80ac9fb93bc21d8ee8ebf391|2025-08-27 14:33:14 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Added remaining GPT4o answers for Nationality
+10dc786deb5234813d2a6d6c043f39b3ac7d8190|2025-08-27 13:33:51 +0200|wesselb|wessel.braakman@statnett.no|gemini with results and count for Nationality category
+4faa82d7c71ee1df32fcc86070fa8ff45aa13f69|2025-08-27 13:25:09 +0200|Wessel Braakman|wessel.braakman@bouvet.no|results for automated scoring nationality gemini
+0f16aa264ae5dff55ddbb07702d9247efc2c2535|2025-08-27 13:23:15 +0200|wesselb|wessel.braakman@statnett.no|prompts file for automated scoring Nationality Gemini
+424ffeb5dc107b9a84c3ccf329511b04c8f43472|2025-08-26 08:24:16 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Added files with count of not-unbiased answers for gpt4o and perplexity
+1bc7c5afc68b822470d73674195b0cb681b1ceb9|2025-08-25 16:03:05 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Updated script for scoring to take full sheet and run prompts in batches of 10. Also ran the script for Perplexity and GPT4o on the Age category
+15fc053da284dc6761a3ae9e5c92b857369c7943|2025-08-25 14:44:45 +0200|Wessel Braakman|wessel.braakman@bouvet.no|updated tools to not have any reference to api keys
+176d8374304491b061ec690f7e23bafc7bbc9226|2025-08-25 14:11:00 +0200|wesselb|wessel.braakman@statnett.no|try again
+d25521fdf2b4116181f7a3cee0245ebc02d04edc|2025-08-25 14:09:44 +0200|wesselb|wessel.braakman@statnett.no|Removed api key from files
+c66afe97404fb8b1cbd3b5db4af3624d03378e5b|2025-08-25 14:08:22 +0200|wesselb|wessel.braakman@statnett.no|Started work on automated scoring through a script
+8509d016257a74b7068286feb8463397c8cd79b6|2025-08-20 12:57:44 +0200|wesselb|wessel.braakman@statnett.no|Added Gender Identity last couple for Perplexity
+3c9acd7d05ffbf279b1db7d52c7dff1229e115bd|2025-08-04 12:57:24 +0200|wesselb|wessel.braakman@statnett.no|Added answers from Perplexity (Teresa) for Age, Religion and Gender Identity
+265cb16731bf3b1da1efea3757b848c8c2981231|2025-08-04 12:35:45 +0200|wesselb|wessel.braakman@statnett.no|Nationality all prompts translated
+453a579ab5d0c1d10f597275fd0abf15d383722f|2025-07-29 14:43:38 +0200|Wessel Braakman|wessel.braakman@bouvet.no|Added import files for testing the app
+979004f13fd355516606fd21961cb6b024bb3891|2025-07-04 10:58:01 +0200|wesselb|wessel.braakman@statnett.no|finalized answers from chatgpt 4o for Religion
+b9561dc75c7114e7354ddf5b9ee2e4c5dbdeb0a3|2025-07-03 13:06:14 +0200|wesselb|wessel.braakman@statnett.no|first 50 answers from ChatGPT for Religion category, then I hit the gpt-4o limit. More later
+eaba42ff0f146192b8596b81ffb597e4a67aa6b2|2025-07-03 11:21:32 +0200|wesselb|wessel.braakman@statnett.no|All answers from chatgpt for category Gender Identity
+aeefbd567748c4d399e36cb55b093bd6ecc3e68d|2025-07-02 14:53:36 +0200|wesselb|wessel.braakman@statnett.no|removed obsolete files
+2e59a6e8786f7fd46dc7d0f053bd9565f262ecbe|2025-07-02 14:49:38 +0200|wesselb|wessel.braakman@statnett.no|Half of the ChatGPT 4o responses for Gender Identity, before I ran into 4o limits
+2bfcf61f28288736a1c4a304b3af98494a213367|2025-06-06 14:25:20 +0200|wesselb|wessel.braakman@statnett.no|Created prompts and responses files for all categories. Please use these to log responses from different AI systems..
+87b470704cc37c948c53ab0ab14037e3a71cf083|2025-06-06 14:10:18 +0200|wesselb|wessel.braakman@statnett.no|Age category with around 100 prompts INCLUDING answers from GPT-4o (TODO: at least Gemini and Mistral7B)
+8f79a731c1bacf338d9cd0d76ea56623a8db8695|2025-06-06 10:06:04 +0200|wesselb|wessel.braakman@statnett.no|translations for religion (using chatgpt)
+07e0f5f863845199726429c01b5fcea9ea6c794c|2025-05-19 13:39:41 +0200|wesselb|wessel.braakman@statnett.no|Added translations for Age, and Gender Identity, for first 100-ish. Used ChatGPT
+7d8070b34c6ab6dca8c2c03117884caddd867fd3|2025-03-05 12:27:58 +0100|Wessel Braakman|wessel.braakman@bouvet.no|uploaded file with prompts responses with gpt,gemini,mistral7b for age
+407e8d7cbf7bac544461a0eb025b795d37e3638e|2025-03-05 12:27:34 +0100|Wessel Braakman|wessel.braakman@bouvet.no|uploaded file with prompts responses with gpt,gemini,mistral7b for age
+84971ac1b307da1563fecbce6b5f24c6201eda32|2025-03-04 16:02:09 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|Merge pull request #1 from alepalpe/main
+ef5ca7a7b33759f0a0d6563b0ef394ec1045c220|2025-03-04 15:49:55 +0100|alepalpe|alepalpe@gmail.com|Add a new file with Gemini answers
+06a4e52c00c08c919aacc4071625003b365846a0|2025-03-04 09:57:23 +0100|Wessel Braakman|wessel.braakman@bouvet.no|Nationality, with Mistral7B responses
+fb3e8bb132417e697bacde9fcf3726e372838e06|2025-03-04 09:52:04 +0100|Wessel Braakman|wessel.braakman@bouvet.no|Religion, with Mistral7B responses
+54755b51f92f121966882ece485290c4a25826f3|2025-03-04 09:40:24 +0100|Wessel Braakman|wessel.braakman@bouvet.no|Alder, with Mistral7B responses
+1c99816a486c67d23870bdef6976370153583fd4|2025-02-26 10:13:15 +0100|wesselb|wessel.braakman@statnett.no|gender identity prompts fil inkludert svar fra gemini og claude og kategorier for vurdering
+a9e3896493f6edbcf57dc4b4597cb5493212284a|2025-02-21 22:20:57 +0100|alepalpe|alejandra.perez@bouvet.no|aqui vamos a provar
+0b0c216c0de80218c186fd547a3d35a0606b0d6e|2025-02-21 22:11:40 +0100|alepalpe|alejandra.perez@bouvet.no|Merge branch 'main' of https://github.com/WesselBraakman/NoBBQ
+285cf818ba414d3c72bed7ecfc2ed1684c96836a|2025-02-21 22:00:06 +0100|alepalpe|alejandra.perez@bouvet.no|trying to push changes many times
+587a0157d4e47bc5cac69855e990da26a43794b8|2025-02-21 21:54:38 +0100|alepalpe|alejandra.perez@bouvet.no|new filed. with 40 cells, 10 quiestions
+36cba58dbfc78e38319b105b2a7a4d817b50db10|2025-02-21 19:19:39 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|translate until cell 41.
+fb7c1a33fddb9bac274f16188a5643567ffc7894|2025-02-21 19:18:55 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|changed the file
+10c19742c5291184d78dbc04ac2ff3e82a12f135|2025-02-21 15:17:00 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|try to commit again so I can push the changes to the repo in Github
+997b3dd85daae1a7cc1d558cf2d8ba51771aa0d8|2025-02-21 15:10:22 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|Add the last questions in norwegian merged with konteksten. Ready to start promts
+a3be1979435c661903e1c9e1efd7c52660e76b05|2025-02-21 14:10:53 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|Translate to norwegian until cell 41 in order to include the 10 questions but with different context within the questions
+2d03de3a4752f87e6f23f5fcba0ae512b1214032|2025-02-21 13:22:12 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|endret spørsmål 1-8, kun enkelte ord.
+8b8958829129f3c74f610430932179a93a1d14d6|2025-02-20 14:37:37 +0100|wesselb|wessel.braakman@statnett.no|added structure and prompts and answers file for Nationality, added gpt-4o responses
+057a6847b72fb1f5cdc838cf42e6b2df56b21c5a|2025-02-20 13:57:27 +0100|wesselb|wessel.braakman@statnett.no|Gender identity new folder structure, added prompts in norwegian plus responses from gpt-4o
+618776a3811a93b7067d2bedb8324e25ae5ea285|2025-02-20 13:08:55 +0100|wesselb|wessel.braakman@statnett.no|added gpt-4o responses for religion prompts file
+1b35d22d5975c2552a26d03a8915576e13b08bbf|2025-02-19 10:28:10 +0100|wesselb|wessel.braakman@statnett.no|Merge branch 'main' of https://github.com/WesselBraakman/NoBBQ "Merge into main"
+c810aa9d6508a71129daf39e556992f2f3362f96|2025-02-19 10:27:52 +0100|wesselb|wessel.braakman@statnett.no|Added translation file for shortlist Religion, added Religion prompts file, changed data structure with folders
+6082e137dcc62606e1845b057c05d88b5772b34d|2025-02-19 00:41:59 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|Translate until question 10
+4ba2495db1693ac320247c4c8b498c3b90ad56de|2025-02-19 00:00:54 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|A copi of Gender Identity shortlist to translate to norwegian
+29c26ff24f90bd1070f11fe34446a4f3c6c03d51|2025-02-18 23:14:42 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|Jeg har lagt inn kategori kolonne og lagt inn noen kategorie
+e641fb387d8c1ca3fe84b4ba896c260205e3274c|2025-02-17 14:33:46 +0100|wesselb|wessel.braakman@statnett.no|Folder structure for readability
+41d8a81bee23f55a33139121841861612e5770fa|2025-02-17 12:59:41 +0100|wesselb|wessel.braakman@statnett.no|New file containing just prompts and responses
+a1db5ff305dbfbfdb7de77e927c92906d9f1754c|2025-02-13 12:55:11 +0100|wesselb|wessel.braakman@statnett.no|first try getting responses from GPT-4o
+07acef1f1b02db77a7e044162d3f18c5791367af|2025-02-13 12:22:35 +0100|wesselb|wessel.braakman@statnett.no|Added categorization, update and translation for first entries of Nationality category
+a0bcfacf7d1bf3905950e15ebcf3012c34961d28|2025-02-13 11:57:26 +0100|wesselb|wessel.braakman@statnett.no|translated first 10-12 entries in Age
+e38ba60259608d0f135055ce94d7814e1f064350|2025-01-31 10:08:39 +0100|wesselb|wessel.braakman@statnett.no|Merge branch 'main' of https://github.com/WesselBraakman/NoBBQ "Merge otherwise i cannot push my changes"
+dd1e904e72f1731cb32b44f829acb15ec03ee801|2025-01-31 10:08:21 +0100|wesselb|wessel.braakman@statnett.no|Added Nationality files, ready to categorize
+63990947b04c85fc6f735bbded251e928b8b58e3|2025-01-27 12:45:16 +0100|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+b67045c02ee21c15fc05cef5bee83b9e2ce95f18|2025-01-17 22:02:22 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|Har sjekket fram til rad 50
+8ec8bbc1771b09b3c1f1d6c564b95541a7b0860e|2025-01-17 16:55:53 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|Jeg har laget en kolonne for å categorisere spørsmålene
+feae6ccfb4fccae16cc93fccdaaa15dd70f659d4|2025-01-17 16:53:15 +0100|alepalpe|124056887+alepalpe@users.noreply.github.com|cambie las lineas 1 hasta la 5
+e11f2e179044a1931afad42bb68bde1ba277571a|2025-01-10 13:36:36 +0100|wesselb|wessel.braakman@statnett.no|Added shortlist files for gender and religion
+c56687aaabd5d6218c76c74b83d79342259a9765|2025-01-10 11:22:20 +0100|wesselb|wessel.braakman@statnett.no|categorized Age contexts
+50a831e158931621883a0484235b91f886c3fb7d|2024-12-19 11:44:14 +0100|wesselb|wessel.braakman@statnett.no|remove test file by Teresa
+c4bef8cb94608d952c2249fadc915925688ca5c4|2024-12-19 11:33:39 +0100|Teresa Dalen Herland|teresa.herland@bouvet.no|test commit to see if it works
+3c0052b97109deab61a619ddfcce497d83e0aeaa|2024-12-17 13:49:16 +0100|wesselb|wessel.braakman@statnett.no|Merge branch 'main' of https://github.com/WesselBraakman/NoBBQ Merging latest version
+5ec667f108592d139dd7962f859b85ca2c6e343e|2024-12-17 13:48:55 +0100|wesselb|wessel.braakman@statnett.no|Converted original files for age and gender identity to Excel, added script for excel conversion (remember to change filenames for input and output when using)
+7ce08b47a9351440656832b0bd962b2946b44db2|2024-12-17 13:09:12 +0100|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+4b77e74ee8b00559aae4a3366d7c964665fb86c6|2024-12-17 13:08:37 +0100|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+f9b06dd8a08680defd575d179b10706e24e3afcb|2024-12-17 13:08:14 +0100|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+ddd2d91f8bd0e3bad50dae4408a39f7727232450|2024-12-17 13:06:54 +0100|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+78c884f528c94dfaaf981e079fdeb019ce1a297d|2024-12-17 13:01:21 +0100|wesselb|wessel.braakman@statnett.no|Added original files for the 3 categories we are currently working on
+35fad61221784bf473215fd72d317a8c7199a2be|2024-12-17 12:27:45 +0100|wesselb|wessel.braakman@statnett.no|Changed folder structure to contain data--age folder
+1ccf38d100c6059fec9c6f23a60276d5b746b241|2024-12-17 12:23:30 +0100|wesselb|wessel.braakman@statnett.no|First commit for Age category, original file as excel sheet, and filtered file with 50 unique questions
+706794fa9a86b3e02aec4150e1d2550ac3418487|2024-12-17 12:18:07 +0100|Wessel Braakman|wesselbraakman@gmail.com|Update README.md
+bdb88374de5ea288e86718e8b0ce34a84fd9f5e1|2024-11-29 13:21:07 +0100|Wessel Braakman|wesselbraakman@gmail.com|Initial commit
